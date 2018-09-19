@@ -22,15 +22,16 @@ namespace Walldisplay
 
         protected override void OnStart(string[] args)
         {
-            string url = "http://127.0.0.1:9000/";
-            if (args.Length > 0)
+            String url = args.FirstOrDefault(a => a.StartsWith("http"));
+            if (url == null)
             {
-                url = args[0];
+                url = "http://127.0.0.1:9000/";
             }
-            EventLog.WriteEntry("Walldisplay webinterface listening at: " + url, EventLogEntryType.Information);
+
+            if (!Environment.UserInteractive) EventLog.WriteEntry("Walldisplay webinterface listening at: " + url, EventLogEntryType.Information);
             Console.WriteLine("Listening at: " + url);
             webApp = WebApp.Start<WebStartup>(url);
-            EventLog.WriteEntry("Walldisplay started", EventLogEntryType.Information);
+            if (!Environment.UserInteractive) EventLog.WriteEntry("Walldisplay started", EventLogEntryType.Information);
 
         }
 
