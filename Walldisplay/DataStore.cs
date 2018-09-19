@@ -7,20 +7,52 @@ using System.Threading.Tasks;
 
 namespace Walldisplay
 {
-    interface IUserStatisticData
+    interface IUserRealtimeElement
     {
-        string getName();
-        string getState();
-        DateTime getStateStart();
+        string Name();
+        string State();
+        DateTime StateStart();
     }
-    interface IGroupStatisticsData
+    
+    interface IGroupRealtimeElement
     {
-        string getGroup();
-        IUserStatisticData[] getUsers();
+        int LoggedOn();
+        int OnRoutedCall();
+        int OnDirectCall();
+        int Idle();
+        int Busy();
+        int Away();
+        int CallsWaiting();
+
+    }
+
+
+    interface ICummulativeElement
+    {
+        int Received();
+        int Abandoned();
+        int Answered();
+        long AvgWaitingTimeSec();
+        long MaxWaitingTimeSec();
+        int ServiceLevelPerc();
+
+    }
+    interface IGroupElements
+    {
+        string Group();
+        IUserRealtimeElement[] UserRealtimeElement();
+        IGroupRealtimeElement GroupRealtimeElement();
+        ICummulativeElement AggregateCummulativeElement();
+
     }
     interface IStatisticsData
     {
-        IGroupStatisticsData getGroupStatistics(string group);
+        IGroupElements[] GroupData();
+
+        ICummulativeElement QueueCummulativeElement();
+
+        ICummulativeElement[] HourlyCummulativeElements();
+        int EndHour();
     }
 
     sealed class DataStore
@@ -48,6 +80,6 @@ namespace Walldisplay
             }
         }
 
-        public IStatisticsData data { get; set; }
+        public IStatisticsData Data { get; set; }
     }
 }
