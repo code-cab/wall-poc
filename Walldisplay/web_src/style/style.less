@@ -1,0 +1,56 @@
+@import "../../node_modules/bootstrap/less/bootstrap";
+
+@hlinecolor: #aaa;
+@linecolor: #aaa;
+@menubk: #444;
+@entrybk: #eee;
+
+body {
+  background-color: white;
+  padding: 10px 10px;
+}
+
+h2 {
+  font-size: 16px;
+  border: 1px solid @hlinecolor;
+  border-radius: 10px;
+  padding: 10px 10px;
+  text-align: center;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  > li {
+    display: inline-block;
+  }
+}
+
+.router-link-exact-active {
+  .btn;
+  .btn-primary;
+}
+
+
+.entries {
+  height: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  > * {
+    display: block;
+    margin-bottom: 10px;
+  }
+  .entry {
+    border: 1px solid @linecolor;
+    border-radius: 10px;
+    background-color: @entrybk;
+    height: 2.5em;
+    padding-top: 4px;
+  }
+}
+
+.user-statistics {
+  .entries {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "name": "walldisplay",
+  "version": "0.0.1",
+  "dependencies": {
+    "vue": "^2.5.17",
+    "vue-router": "^3.0.1",
+    "bootstrap": "^3.3.7",
+    "moment": "^2.22.2",
+    "jquery": "^3.3.1",
+    "format-duration": "^1.2.0"
+  },
+  "devDependencies": {
+    "webpack": "^3.12.0",
+    "ejs": "^2.6.1",
+    "ejs-cli": "^2.0.1",
+    "less": "^3.8.1",
+    "webpack-cli": "^3.1.0",
+    "style-loader": "^0.23.0",
+    "css-loader": "^1.0.0",
+    "less-loader": "^4.1.0",
+    "vue-loader": "^15.4.2",
+    "vue-template-compiler": "^2.5.17",
+    "file-loader": "^2.0.0",
+    "copyfiles": "^2.1.0",
+    "livereload": "^0.7.0"
+  },
+  "scripts": {
+    "build.ejs": "ejs-cli --base-dir web_src/ \"*.ejs\" --out web/",
+    "build.static": "copyfiles -u 2 web_src/static/* web/static",
+    "build.webpack": "webpack --config webpack.config.js --watch",
+    "build": "npm run build.ejs && npm run build.static && npm run build.webpack",
+    "livereload": "livereload build"
+  }
+}

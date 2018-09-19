@@ -1,0 +1,17 @@
+**/.vs/
+**/bin/
+**/.idea/
+**/node_modules/
+**/packages/
+**/obj/
+**/Debug/
+**/Release/
+*.bak
+*.old
+*.log
+*.lib
+*.sbr
+*.obj
+*.pdb
+*.idb
+
