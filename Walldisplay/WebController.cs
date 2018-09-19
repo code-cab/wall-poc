@@ -11,7 +11,7 @@ using Walldisplay;
 
 namespace Click2DialService
 {
-    public class WebController : ApiController
+    public class UserStatisticsController : ApiController
     {
         public class UserStatistic
         {
@@ -26,33 +26,41 @@ namespace Click2DialService
             public UserStatistic[] users { get; set; }
         }
 
-
-        public HttpResponseMessage GetUserstatistics(string group)
+        [HttpGet]
+        public HttpResponseMessage Get(string group)
         {
-            HttpResponseMessage response;
 
-            IStatisticsData data = DataStore.Instance.Data;
-
-            IGroupElements groupData = data.GroupData().First(d => d.Group().Equals(group));
-
-            long now = DateTime.Now.Ticks;
-
-            UserStatistics userStatistics = new UserStatistics
+            try
             {
-                group = group,
-                users = groupData.UserRealtimeElement().Select(tu => new UserStatistic()
+                HttpResponseMessage response;
+                IStatisticsData data = DataStore.Instance.Data;
+
+                IGroupElements groupData = data.GroupData().First(d => d.Group().Equals(group));
+
+                long now = DateTime.Now.Ticks;
+
+                UserStatistics userStatistics = new UserStatistics
                 {
-                    name = tu.Name(),
-                    state = tu.State(),
-                    duration = Convert.ToInt64((now - tu.StateStart().Ticks) / 1000)
-                }).ToArray()
-            };
+                    group = group,
+                    users = groupData.UserRealtimeElement().Select(tu => new UserStatistic()
+                    {
+                        name = tu.Name(),
+                        state = tu.State(),
+                        duration = Convert.ToInt64((now - tu.StateStart().Ticks) / 1000)
+                    }).ToArray()
+                };
 
-            String json = JsonConvert.SerializeObject(userStatistics);
-            response = Request.CreateResponse(HttpStatusCode.OK);
-            response.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                String json = JsonConvert.SerializeObject(userStatistics);
+                response = Request.CreateResponse(HttpStatusCode.OK);
+                response.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            return response;
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex);
+            }
         }
     }
 }

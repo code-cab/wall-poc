@@ -21,7 +21,7 @@ namespace Walldisplay
             httpConfiguration.Routes.MapHttpRoute(
                 name: "user statistics", 
                 routeTemplate: "userstatistics", 
-                defaults: new { controller = "Web", groupId = RouteParameter.Optional });
+                defaults: new { controller = "UserStatistics", groupId = RouteParameter.Optional });
 
             httpConfiguration.Formatters.JsonFormatter.UseDataContractJsonSerializer = true;
             httpConfiguration.Formatters.Remove(httpConfiguration.Formatters.XmlFormatter);
