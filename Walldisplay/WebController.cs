@@ -33,20 +33,20 @@ namespace Click2DialService
             try
             {
                 HttpResponseMessage response;
-                IStatisticsData data = DataStore.Instance.Data;
+                StatisticsData data = DataStore.Instance.Data;
 
-                IGroupElements groupData = data.GroupData().First(d => d.Group().Equals(group));
+                GroupElements groupData = data.GroupData.First(d => d.Group.Equals(group));
 
                 long now = DateTime.Now.Ticks;
 
                 UserStatistics userStatistics = new UserStatistics
                 {
                     group = group,
-                    users = groupData.UserRealtimeElement().Select(tu => new UserStatistic()
+                    users = groupData.UserRealtimeElement.Select(tu => new UserStatistic()
                     {
-                        name = tu.Name(),
-                        state = tu.State(),
-                        duration = Convert.ToInt64((now - tu.StateStart().Ticks) / 1000)
+                        name = tu.Name,
+                        state = tu.State,
+                        duration = Convert.ToInt64((now - tu.StateStart.Ticks) / 1000)
                     }).ToArray()
                 };
 

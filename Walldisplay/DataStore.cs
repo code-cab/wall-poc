@@ -7,53 +7,78 @@ using System.Threading.Tasks;
 
 namespace Walldisplay
 {
-    interface IUserRealtimeElement
+    public class UserRealtimeElement
     {
-        string Name();
-        string State();
-        DateTime StateStart();
+        public string Name { get; set; }
+        public string State { get; set; }
+        public DateTime StateStart { get; set; }
+
+        public UserRealtimeElement()
+        {
+            StateStart = DateTime.Now;
+        }
     }
     
-    interface IGroupRealtimeElement
+    public class GroupRealtimeElement
     {
-        int LoggedOn();
-        int OnRoutedCall();
-        int OnDirectCall();
-        int Idle();
-        int Busy();
-        int Away();
-        int CallsWaiting();
-
+        public int LoggedOn { get; set; }
+        public int OnRoutedCall { get; set; }
+        public int OnDirectCall { get; set; }
+        public int Idle { get; set; }
+        public int Busy { get; set; }
+        public int Away { get; set; }
+        public int CallsWaiting { get; set; }
     }
 
 
-    interface ICummulativeElement
+    public class CummulativeElement
     {
-        int Received();
-        int Abandoned();
-        int Answered();
-        long AvgWaitingTimeSec();
-        long MaxWaitingTimeSec();
-        int ServiceLevelPerc();
+        public int Received { get; set; }
+        public int Abandoned { get; set; }
+        public int Answered { get; set; }
+        public long AvgWaitingTimeSec { get; set; }
+        public long MaxWaitingTimeSec { get; set; }
+        public int ServiceLevelPerc { get; set; }
+    }
+    public class GroupElements
+    {
+        public string Group { get; set; }
+        public UserRealtimeElement[] UserRealtimeElement { get; set; }
+        public GroupRealtimeElement GroupRealtimeElement { get; set; }
+        public CummulativeElement AggregateCummulativeElement { get; set; }
+
+        public GroupElements()
+        {
+            UserRealtimeElement = new UserRealtimeElement[0];
+            GroupRealtimeElement = new GroupRealtimeElement();
+            AggregateCummulativeElement = new CummulativeElement();
+        }
+    }
+
+    public class CummelativeElement
+    {
+        public int Received { get; }
+        public int Abandoned { get; }
 
     }
-    interface IGroupElements
+
+    public class StatisticsData
     {
-        string Group();
-        IUserRealtimeElement[] UserRealtimeElement();
-        IGroupRealtimeElement GroupRealtimeElement();
-        ICummulativeElement AggregateCummulativeElement();
+        public GroupElements[] GroupData { get; set; }
 
+        public CummulativeElement QueueCummulativeElement { get; set; }
+
+        public CummulativeElement[] HourlyCummulativeElements { get; set; }
+        public int EndHour { get; set; }
+
+        public StatisticsData()
+        {
+            GroupData = new GroupElements[0];
+            QueueCummulativeElement = new CummulativeElement();
+            HourlyCummulativeElements = new CummulativeElement[0];
+        }
     }
-    interface IStatisticsData
-    {
-        IGroupElements[] GroupData();
 
-        ICummulativeElement QueueCummulativeElement();
-
-        ICummulativeElement[] HourlyCummulativeElements();
-        int EndHour();
-    }
 
     sealed class DataStore
     {
@@ -62,7 +87,6 @@ namespace Walldisplay
 
         DataStore()
         {
-
         }
 
         public static DataStore Instance
@@ -80,6 +104,12 @@ namespace Walldisplay
             }
         }
 
-        public IStatisticsData Data { get; set; }
+        /**
+         * StatisticsData is thread safe as long as the array length is not being changed.
+         * 
+         * When the array length has to change, the whole StatisticsData instance object should be replaced
+         * 
+         **/ 
+        public StatisticsData Data { get; set; }
     }
 }
