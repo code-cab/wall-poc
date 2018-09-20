@@ -22,13 +22,15 @@
     "vue-template-compiler": "^2.5.17",
     "file-loader": "^2.0.0",
     "copyfiles": "^2.1.0",
-    "livereload": "^0.7.0"
+    "livereload": "^0.7.0",
+    "simple-dev-server": "^2.0.2"
   },
   "scripts": {
     "build.ejs": "ejs-cli --base-dir web_src/ \"*.ejs\" --out web/",
     "build.static": "copyfiles -u 2 web_src/static/* web/static",
     "build.webpack": "webpack --config webpack.config.js --watch",
     "build": "npm run build.ejs && npm run build.static && npm run build.webpack",
+    "watch": "npm run build.ejs && npm run build.static && webpack --config webpack-dev.config.js",
     "livereload": "livereload build"
   }
 }

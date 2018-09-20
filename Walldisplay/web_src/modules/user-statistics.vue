@@ -42,9 +42,10 @@
         },
         methods: {
             updateData() {
-                $.getJSON('static/user-statistics.json', data => this.stats = data);
+                $.getJSON('/userstatistics?group=ABC', data => this.stats = data);
             },
             fmt(duration) {
+                console.log(duration);
                 return formatDuration(duration * 1000);
             }
         }

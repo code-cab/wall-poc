@@ -449,9 +449,10 @@ module.exports = __webpack_require__.p + "fonts/glyphicons-halflings-regular.eot
         },
         methods: {
             updateData() {
-                __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.getJSON('static/user-statistics.json', data => this.stats = data);
+                __WEBPACK_IMPORTED_MODULE_0_jquery___default.a.getJSON('/userstatistics?group=ABC', data => this.stats = data);
             },
             fmt(duration) {
+                console.log(duration);
                 return __WEBPACK_IMPORTED_MODULE_1_format_duration___default()(duration * 1000);
             }
         }

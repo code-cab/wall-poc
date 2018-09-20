@@ -46,7 +46,7 @@ namespace Click2DialService
                     {
                         name = tu.Name,
                         state = tu.State,
-                        duration = Convert.ToInt64((now - tu.StateStart.Ticks) / 1000)
+                        duration = Convert.ToInt64((now - tu.StateStart.Ticks) / TimeSpan.TicksPerSecond)
                     }).ToArray()
                 };
 

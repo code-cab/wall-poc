@@ -2,7 +2,7 @@
   "group": "ABC",
   "users": [{
     "name": "JOHN",
-    "state": "ACTIVE",
+    "state": "IDLE",
     "startTime": 1537278009945
   }, {
     "name": "SUE",
