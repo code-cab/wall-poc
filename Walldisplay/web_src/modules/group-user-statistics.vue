@@ -1,16 +1,16 @@
 <template>
-    <div v-if="stats" class="user-statistics container-fluid">
+    <div class="user-statistics container-fluid">
         <div class="row">
             <div class="col-xs-12">
-                <h2>GROUP {{ stats.group }} USER STATISTICS - REALTIME</h2>
+                <h2>GROUP {{ data.GroupKeys[0].GroupName }} USER STATISTICS - REALTIME</h2>
             </div>
         </div>
         <ul class="entries row">
-            <li v-for="user in stats.users" class="col-xs-12 col-md-6">
-                <div class="entry">
-                    <span class="col-xs-8">{{user.name}}</span>
-                    <span class="col-xs-2">{{user.state}}</span>
-                    <span class="col-xs-2 text-right">{{fmt(user.duration)}}</span>
+            <li v-for="user in data.UserKeys" class="col-xs-12 col-md-6">
+                <div class="entry" v-bind:class="stateClass(user.State)">
+                    <span class="col-xs-8">{{user.Name}}</span>
+                    <span class="col-xs-2">{{user.State}}</span>
+                    <span class="col-xs-2 text-right">{{fmt(user.DurationSec)}}</span>
                 </div>
             </li>
         </ul>
@@ -23,30 +23,18 @@
     export default {
         data() {
             return {
-                stats: null
+                data: this.$parent.data
             };
         },
-        created() {
-            this.$watch('stats', function() {}, {deep: true});
-            this.updateData();
-        },
-        mounted() {
-            if (this.timer) clearInterval(this.timer);
-            this.timer = setInterval(() => this.updateData(), 1000);
-        },
-        destroyed() {
-            if (this.timer) {
-                clearInterval(this.timer);
-                this.timer = 0;
-            }
-        },
         methods: {
-            updateData() {
-                $.getJSON('/userstatistics?group=ABC', data => this.stats = data);
-            },
             fmt(duration) {
                 console.log(duration);
                 return formatDuration(duration * 1000);
+            },
+            stateClass(state) {
+                return {
+                    "ACTIVE": "active"
+                }[state];
             }
         }
     }

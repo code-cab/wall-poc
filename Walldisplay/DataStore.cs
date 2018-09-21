@@ -38,7 +38,7 @@ namespace Walldisplay
         public int ServiceLevelPerc { get; set; }
     }
 
-    public class Aggregatekey : QueueKey
+    public class AggregateKey : QueueKey
     {
     }
 
@@ -52,7 +52,7 @@ namespace Walldisplay
         public UserKey[] UserKeys { get; set; }
         public GroupKey[] GroupKeys { get; set; }
         public QueueKey[] QueueKeys { get; set; }
-        public Aggregatekey[] Aggregatekeys { get; set; }
+        public AggregateKey[] AggregateKeys { get; set; }
         public HourlyQueueKey[][] HourlyQueueKeys { get; set; }
 
         public KeysData()
@@ -60,7 +60,7 @@ namespace Walldisplay
             UserKeys = new UserKey[0];
             GroupKeys = new GroupKey[0];
             QueueKeys = new QueueKey[0];
-            Aggregatekeys = new Aggregatekey[0];
+            AggregateKeys = new AggregateKey[0];
             HourlyQueueKeys = new HourlyQueueKey[0][];
         }
     }
@@ -261,9 +261,9 @@ namespace Walldisplay
                     },
 
                 },
-                Aggregatekeys = new Aggregatekey[]
+                AggregateKeys = new AggregateKey[]
                 {
-                    new Aggregatekey
+                    new AggregateKey
                     {
                         GroupName = "XYZ",
                         Received = 66,

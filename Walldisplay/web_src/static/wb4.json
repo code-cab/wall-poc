@@ -1,0 +1,1 @@
+{"View":"QueueStatistics","UserKeys":[],"GroupKeys":[],"QueueKeys":[{"GroupName":"Queue B - Facilities","Received":32,"Abandoned":3,"Answered":29,"AvgWaitingTimeSec":26,"MaxWaitingTimeSec":36,"ServiceLevelPerc":91}],"AggregateKeys":[],"HourlyQueueKeys":[]}

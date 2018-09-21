@@ -19,9 +19,9 @@ namespace Walldisplay
             var httpConfiguration = new HttpConfiguration();
 
             httpConfiguration.Routes.MapHttpRoute(
-                name: "user statistics", 
-                routeTemplate: "userstatistics", 
-                defaults: new { controller = "UserStatistics", groupId = RouteParameter.Optional });
+                name: "Get walldisplay data", 
+                routeTemplate: "api", 
+                defaults: new { controller = "DisplayData", displayId= RouteParameter.Optional });
 
             httpConfiguration.Formatters.JsonFormatter.UseDataContractJsonSerializer = true;
             httpConfiguration.Formatters.Remove(httpConfiguration.Formatters.XmlFormatter);
