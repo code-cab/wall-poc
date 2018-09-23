@@ -20,7 +20,7 @@ namespace Walldisplay
 
             httpConfiguration.Routes.MapHttpRoute(
                 name: "Get walldisplay data", 
-                routeTemplate: "api", 
+                routeTemplate: "api/{displayId}", 
                 defaults: new { controller = "DisplayData", displayId= RouteParameter.Optional });
 
             httpConfiguration.Formatters.JsonFormatter.UseDataContractJsonSerializer = true;

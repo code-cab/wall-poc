@@ -1,16 +1,17 @@
 <template>
-    <div class="user-statistics container-fluid">
-        <div class="row">
+    <div class="group-user-statistics container-fluid">
+        <div class="row header">
             <div class="col-xs-12">
                 <h2>GROUP {{ data.GroupKeys[0].GroupName }} USER STATISTICS - REALTIME</h2>
             </div>
         </div>
-        <ul class="entries row">
+        <ul class="entries row content">
             <li v-for="user in data.UserKeys" class="col-xs-12 col-md-6">
-                <div class="entry" v-bind:class="stateClass(user.State)">
-                    <span class="col-xs-8">{{user.Name}}</span>
-                    <span class="col-xs-2">{{user.State}}</span>
-                    <span class="col-xs-2 text-right">{{fmt(user.DurationSec)}}</span>
+                <div class="grid entry" v-bind:class="user.State.toLowerCase()">
+                    <div class="cell">{{user.Name}}</div>
+                    <div class="cell text-center">{{user.State}}</div>
+                    <div class="cell text-right">{{fmt(user.DurationSec)}}</div>
+                    <div class="img"></div>
                 </div>
             </li>
         </ul>
@@ -31,11 +32,6 @@
                 console.log(duration);
                 return formatDuration(duration * 1000);
             },
-            stateClass(state) {
-                return {
-                    "ACTIVE": "active"
-                }[state];
-            }
         }
     }
 

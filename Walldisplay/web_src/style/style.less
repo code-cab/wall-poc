@@ -4,20 +4,30 @@
 @linecolor: #aaa;
 @menubk: #444;
 @entrybk: #eee;
+@fontsize: 30px;
+@green: #00b050;
 
 body {
   background-color: white;
   padding: 10px 10px;
+  font-size: @fontsize;
 }
 
 h2 {
-  font-size: 16px;
-  border: 1px solid @hlinecolor;
+  font-size: @fontsize;
+  border: 4px solid @hlinecolor;
   border-radius: 10px;
-  padding: 10px 10px;
+  padding: 27px 10px;
   text-align: center;
 }
 
+.header {
+  height: 150px;
+}
+
+.content {
+  height: ~"calc(100vh - 150px - 30px)";
+}
 ul {
   list-style: none;
   padding: 0;
@@ -33,24 +43,71 @@ ul {
 
 
 .entries {
-  height: 300px;
   display: flex;
   flex-wrap: wrap;
   > * {
     display: block;
     margin-bottom: 10px;
   }
+  .grid {
+    display: grid;
+    grid-column-gap: 10px;
+
+  }
+
   .entry {
-    border: 1px solid @linecolor;
+    height: 100px;
+  }
+
+  .cell {
+    border: 2px solid @linecolor;
     border-radius: 10px;
-    background-color: @entrybk;
-    height: 2.5em;
-    padding-top: 4px;
+    padding: 27px 20px 0px;
+  }
+
+  .img {
+    height: 100px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
   }
 }
 
-.user-statistics {
+.group-user-statistics {
   .entries {
     flex-direction: column;
+  }
+  .grid {
+    grid-template-columns: auto 150px 150px 100px;
+  }
+
+  .away .img {
+    background-image: url('../img/call.png');
+  }
+}
+
+.group-statistics {
+  .grid {
+    grid-template-columns: 100px auto 100px;
+  }
+
+  .man .img {
+    background-image: url('../img/call.png');
+  }
+  .woman .img {
+    background-image: url('../img/call.png');
+  }
+  .calls-waiting .img{
+    background-image: url('../img/call.png');
+  }
+  .calls-waiting > div:last-child {
+    color: @green;
+    font-weight: bold;
+  }
+}
+
+.multi-group-statistics {
+  .grid {
+    grid-template-columns: auto 230px 200px 200px 200px 200px 200px 200px;
   }
 }

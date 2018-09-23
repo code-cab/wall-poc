@@ -40,7 +40,7 @@ namespace Click2DialService
                 };
                 if (data.View == null) throw new ArgumentException("Invalid display id " + displayId);
 
-                Func<string, int[]> getKeys = key => (ini[displayId][key] ?? "").Split(',').Where(s => s.Length > 0).Select(s => Convert.ToInt32(s)).ToArray();
+                Func<string, int[]> getKeys = key => (ini[displayId][key] ?? "").Split(',').Where(s => s.Length > 0).Select(s => Convert.ToInt32(s) - 1).ToArray();
                 
                 data.UserKeys = keysData.UserKeys.Where((d, index) => getKeys("UserKeys").Contains(index)).ToArray();
 

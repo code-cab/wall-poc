@@ -97,7 +97,6 @@
     <EmbeddedResource Include="web\fonts\glyphicons-halflings-regular.ttf" />
     <EmbeddedResource Include="web\fonts\glyphicons-halflings-regular.woff" />
     <EmbeddedResource Include="web\fonts\glyphicons-halflings-regular.woff2" />
-    <EmbeddedResource Include="web\static\user-statistics.json" />
     <None Include="packages.config" />
     <None Include="walldisplay.ini">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
