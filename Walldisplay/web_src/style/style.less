@@ -4,8 +4,10 @@
 @linecolor: #aaa;
 @menubk: #444;
 @entrybk: #eee;
-@fontsize: 30px;
+@fontsize: 1.8vw;
+@largefontsize: 2.2vw;
 @green: #00b050;
+@red: #ff0000;
 
 body {
   background-color: white;
@@ -13,20 +15,28 @@ body {
   font-size: @fontsize;
 }
 
+.center() {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 h2 {
   font-size: @fontsize;
   border: 4px solid @hlinecolor;
   border-radius: 10px;
-  padding: 27px 10px;
+  height: 4vw;
+  vertical-align: bottom;
   text-align: center;
+  .center();
 }
 
 .header {
-  height: 150px;
+  height: 8vw;
 }
 
 .content {
-  height: ~"calc(100vh - 150px - 30px)";
+  height: ~"calc(100vh - 8vw - 3vw)";
 }
 ul {
   list-style: none;
@@ -45,6 +55,7 @@ ul {
 .entries {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-start;
   > * {
     display: block;
     margin-bottom: 10px;
@@ -52,21 +63,25 @@ ul {
   .grid {
     display: grid;
     grid-column-gap: 10px;
+    grid-row-gap: 10px;
 
   }
 
-  .entry {
-    height: 100px;
+  .entry > div {
+    height: 4vw;
+    .center();
   }
 
   .cell {
     border: 2px solid @linecolor;
     border-radius: 10px;
-    padding: 27px 20px 0px;
+    padding: 0px 20px;
+    overflow: hidden;
+    white-space: nowrap;
   }
 
   .img {
-    height: 100px;
+    height: 4vw;
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center center;
@@ -78,7 +93,7 @@ ul {
     flex-direction: column;
   }
   .grid {
-    grid-template-columns: auto 150px 150px 100px;
+    grid-template-columns: auto 10vw 10vw 4vw;
   }
 
   .away .img {
@@ -88,7 +103,7 @@ ul {
 
 .group-statistics {
   .grid {
-    grid-template-columns: 100px auto 100px;
+    grid-template-columns: 4vw auto 4vw;
   }
 
   .man .img {
@@ -104,10 +119,89 @@ ul {
     color: @green;
     font-weight: bold;
   }
+  .calls-waiting.warn > div:last-child {
+    color: @red;
+  }
+
+
 }
 
 .multi-group-statistics {
   .grid {
-    grid-template-columns: auto 230px 200px 200px 200px 200px 200px 200px;
+    grid-template-columns: auto 14vw 10vw 10vw 10vw 10vw 10vw 10vw;
   }
+  .calls-waiting {
+    color: @green;
+    font-weight: bold;
+
+    &.warn {
+      color: @red;
+    }
+  }
+}
+
+.queue-statistics, .aggregate-statistics {
+  .grid {
+    grid-template-columns: 4vw auto;
+  }
+  .entry {
+    div:first-child {
+      grid-column-end: span 2;
+    }
+    div:last-child {
+      font-size: @largefontsize;
+    }
+    margin-bottom: 2vw;
+  }
+
+  .received .img {
+    background-image: url('../img/call.png');
+  }
+  .abandoned .img {
+    background-image: url('../img/call.png');
+  }
+  .answered .img {
+    background-image: url('../img/call.png');
+  }
+  .avg-waiting-time .img {
+    background-image: url('../img/call.png');
+  }
+  .max-waiting-time .img {
+    background-image: url('../img/call.png');
+  }
+  .service-level {
+    .img {
+      background-image: url('../img/call.png');
+    }
+
+    > div:last-child {
+      color: @green;
+      font-weight: bold;
+    }
+    &.warn > div:last-child {
+      color: @red;
+    }
+  }
+}
+
+.multi-queue-statistics {
+  .grid {
+    grid-template-columns: auto 12vw 14vw 14vw 12vw 12vw 7vw;
+  }
+  .calls-waiting, .avg-waiting-time {
+    color: @green;
+    font-weight: bold;
+
+    &.warn {
+      color: @red;
+    }
+  }
+}
+
+.hourly-queue-statistics {
+}
+
+.highcharts-credits {
+  color: white !important;
+  fill: white !important;
 }

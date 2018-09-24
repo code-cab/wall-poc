@@ -1,1 +1,1 @@
-{"View":"GroupStatistics","UserKeys":[],"GroupKeys":[{"GroupName":"Group B","LoggedOn":2,"OnRoutedCall":1,"OnDirectCall":4,"Idle":6,"Busy":0,"Away":0,"CallsWaiting":0}],"QueueKeys":[],"AggregateKeys":[],"HourlyQueueKeys":[]}
+{"View":"GroupStatistics","WaitingWarnLimit":5,"UserKeys":[],"GroupKeys":[{"GroupName":"Group B","LoggedOn":2,"OnRoutedCall":1,"OnDirectCall":4,"Idle":6,"Busy":0,"Away":0,"CallsWaiting":4}],"QueueKeys":[],"AggregateKeys":[],"HourlyQueueKeys":[]}

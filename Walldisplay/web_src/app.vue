@@ -45,12 +45,17 @@
             updateData() {
                 $.getJSON('/api/' + this.displayId, data => this.data = data)
                     .fail(e => this.data = {error: e.responseText || e.statusText});
+                $('body').trigger('updated');
             },
         },
         components: {
             GroupUserStatistics: require('./modules/group-user-statistics.vue').default,
             GroupStatistics: require('./modules/group-statistics.vue').default,
             MultiGroupStatistics: require('./modules/multi-group-statistics.vue').default,
+            QueueStatistics: require('./modules/queue-statistics.vue').default,
+            MultiQueueStatistics: require('./modules/multi-queue-statistics.vue').default,
+            AggregateStatistics: require('./modules/aggregate-statistics.vue').default,
+            HourlyQueueStatistics: require('./modules/hourly-queue-statistics.vue').default,
         }
     }
 

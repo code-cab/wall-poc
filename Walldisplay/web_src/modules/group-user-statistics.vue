@@ -29,30 +29,8 @@
         },
         methods: {
             fmt(duration) {
-                console.log(duration);
                 return formatDuration(duration * 1000);
             },
         }
     }
-
-//
-//    let comp = {
-//        data: () => ({stats: null}),
-//        created: function() {
-//            this.getData();
-//        },
-//        mounthed: function ()
-//
-//        },
-//        methods: {
-//            getData: function() {
-//                $.getJSON('static/user-statistics.json', data => {
-//                    console.log(JSON.stringify(data));
-//                    this.stats = data;
-//                });
-//            }
-//        }
-//    };
-
-//    export default comp;
 </script>

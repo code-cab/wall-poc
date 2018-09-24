@@ -1,1 +1,1 @@
-{"View":"AggregateStatistics","UserKeys":[],"GroupKeys":[],"QueueKeys":[],"AggregateKeys":[{"GroupName":"XYZ","Received":66,"Abandoned":8,"Answered":58,"AvgWaitingTimeSec":23,"MaxWaitingTimeSec":336,"ServiceLevelPerc":90}],"HourlyQueueKeys":[]}
+{"View":"AggregateStatistics","WaitingWarnLimit":5,"AvgWaitingTimeLimit":30,"ServiceLevelWarnLimit":90,"UserKeys":[],"GroupKeys":[],"QueueKeys":[],"AggregateKeys":[{"GroupName":"XYZ","Received":66,"Abandoned":8,"Answered":58,"AvgWaitingTimeSec":23,"MaxWaitingTimeSec":336,"ServiceLevelPerc":90}],"HourlyQueueKeys":[]}
