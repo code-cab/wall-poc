@@ -23,6 +23,7 @@ namespace Click2DialService
             public AggregateKey[] AggregateKeys;
             public HourlyQueueKey[][] HourlyQueueKeys;
             public int WaitingWarnLimit;
+            public int AvgWaitingTimeLimit;
             public int ServiceLevelWarnLimit;
         }
         [HttpGet]
@@ -54,9 +55,9 @@ namespace Click2DialService
                 data.HourlyQueueKeys = keysData.HourlyQueueKeys.Where((d, index) => getKeys("HourlyQueueKeys").Contains(index)).ToArray();
 
                 // TODO: Get from INI/settings?
-                data.WaitingWarnLimit = 5;
-                data.AvgWaitingTimeLimit = 30;
-                data.ServiceLevelWarnLimit = 90;
+                data.WaitingWarnLimit = Convert.ToInt32(ini["WallDisplay"]["WaitingCallsMax"]);
+                data.AvgWaitingTimeLimit = Convert.ToInt32(ini["WallDisplay"]["AvgWaitingTimeMax"]);
+                data.ServiceLevelWarnLimit = Convert.ToInt32(ini["WallDisplay"]["ServiceLevelMin"]);
 
                 HttpResponseMessage response;
 

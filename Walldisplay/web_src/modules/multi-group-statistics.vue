@@ -25,7 +25,7 @@
                 <div class="cell text-center">{{group.Idle}}</div>
                 <div class="cell text-center">{{group.Busy}}</div>
                 <div class="cell text-center">{{group.Away}}</div>
-                <div class="cell text-center calls-waiting" v-bind:class="{warn: group.CallsWaiting >= data.WaitingWarnLimit}">
+                <div class="cell text-center calls-waiting" v-bind:class="{warn: group.CallsWaiting > data.WaitingWarnLimit}">
                     {{group.CallsWaiting}}
                 </div>
             </div>

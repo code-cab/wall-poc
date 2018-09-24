@@ -21,9 +21,9 @@
                 <div class="cell text-center">{{group.Received}}</div>
                 <div class="cell text-center">{{group.Abandoned}}</div>
                 <div class="cell text-center">{{group.Answered}}</div>
-                <div class="cell text-center avg-waiting-time" v-bind:class="{warn: group.AvgWaitingTimeSec >= data.AvgWaitingTimeLimit}">{{fmt(group.AvgWaitingTimeSec)}}</div>
+                <div class="cell text-center avg-waiting-time" v-bind:class="{warn: group.AvgWaitingTimeSec > data.AvgWaitingTimeLimit}">{{fmt(group.AvgWaitingTimeSec)}}</div>
                 <div class="cell text-center">{{fmt(group.MaxWaitingTimeSec)}}</div>
-                <div class="cell text-center calls-waiting" v-bind:class="{warn: group.ServiceLevelPerc <= data.ServiceLevelWarnLimit}">
+                <div class="cell text-center calls-waiting" v-bind:class="{warn: group.ServiceLevelPerc < data.ServiceLevelWarnLimit}">
                     {{group.ServiceLevelPerc}}
                 </div>
             </div>

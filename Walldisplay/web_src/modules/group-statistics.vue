@@ -37,7 +37,7 @@
                 <div class="cell text-center">{{data.GroupKeys[0].Away}}</div>
             </div>
             <div class="grid entry col-xs-12 col-md-offset-3 col-md-6 calls-waiting"
-                 v-bind:class="{warn: data.GroupKeys[0].CallsWaiting >= data.WaitingWarnLimit}">
+                 v-bind:class="{warn: data.GroupKeys[0].CallsWaiting > data.WaitingWarnLimit}">
                 <div class="img"></div>
                 <div class="cell text-center">CALLS WAITING</div>
                 <div class="cell text-center">{{data.GroupKeys[0].CallsWaiting}}</div>

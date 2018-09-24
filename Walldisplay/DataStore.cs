@@ -192,7 +192,7 @@ namespace Walldisplay
                         Idle = 6,
                         Busy = 0,
                         Away = 0,
-                        CallsWaiting = 0
+                        CallsWaiting = 5
                     },
                     new GroupKey
                     {
@@ -203,7 +203,7 @@ namespace Walldisplay
                         Idle = 2,
                         Busy = 1,
                         Away = 2,
-                        CallsWaiting = 3
+                        CallsWaiting = 4
                     },
                     new GroupKey
                     {
@@ -214,7 +214,7 @@ namespace Walldisplay
                         Idle = 2,
                         Busy = 1,
                         Away = 2,
-                        CallsWaiting = 3
+                        CallsWaiting = 6
                     },
                 },
                 QueueKeys = new QueueKey[]
@@ -227,7 +227,7 @@ namespace Walldisplay
                         Answered = 29,
                         AvgWaitingTimeSec = 26,
                         MaxWaitingTimeSec = 36,
-                        ServiceLevelPerc = 91
+                        ServiceLevelPerc = 89
                     },
                     new QueueKey
                     {
@@ -235,9 +235,9 @@ namespace Walldisplay
                         Received = 32,
                         Abandoned = 3,
                         Answered = 29,
-                        AvgWaitingTimeSec = 26,
+                        AvgWaitingTimeSec = 29,
                         MaxWaitingTimeSec = 36,
-                        ServiceLevelPerc = 91
+                        ServiceLevelPerc = 90
                     },
                     new QueueKey
                     {
@@ -245,7 +245,7 @@ namespace Walldisplay
                         Received = 32,
                         Abandoned = 3,
                         Answered = 29,
-                        AvgWaitingTimeSec = 26,
+                        AvgWaitingTimeSec = 30,
                         MaxWaitingTimeSec = 36,
                         ServiceLevelPerc = 91
                     },
@@ -255,7 +255,7 @@ namespace Walldisplay
                         Received = 32,
                         Abandoned = 3,
                         Answered = 29,
-                        AvgWaitingTimeSec = 26,
+                        AvgWaitingTimeSec = 31,
                         MaxWaitingTimeSec = 36,
                         ServiceLevelPerc = 91
                     },

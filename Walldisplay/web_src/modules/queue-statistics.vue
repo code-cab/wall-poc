@@ -32,7 +32,7 @@
                 <div class="img"></div>
                 <div class="cell text-center">{{fmt(data.QueueKeys[0].MaxWaitingTimeSec)}}</div>
             </div>
-            <div class="grid entry col-xs-4 service-level" v-bind:class="{warn: data.QueueKeys[0].ServiceLevelPerc <= data.ServiceLevelWarnLimit}">
+            <div class="grid entry col-xs-4 service-level" v-bind:class="{warn: data.QueueKeys[0].ServiceLevelPerc < data.ServiceLevelWarnLimit}">
                 <div class="cell text-center">SERVICE LEVEL %</div>
                 <div class="img"></div>
                 <div class="cell text-center">{{data.QueueKeys[0].ServiceLevelPerc}} %</div>

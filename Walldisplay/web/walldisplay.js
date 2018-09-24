@@ -21634,8 +21634,7 @@ var render = function() {
           staticClass:
             "grid entry col-xs-12 col-md-offset-3 col-md-6 calls-waiting",
           class: {
-            warn:
-              _vm.data.GroupKeys[0].CallsWaiting >= _vm.data.WaitingWarnLimit
+            warn: _vm.data.GroupKeys[0].CallsWaiting > _vm.data.WaitingWarnLimit
           }
         },
         [
@@ -21772,7 +21771,7 @@ var render = function() {
               "div",
               {
                 staticClass: "cell text-center calls-waiting",
-                class: { warn: group.CallsWaiting >= _vm.data.WaitingWarnLimit }
+                class: { warn: group.CallsWaiting > _vm.data.WaitingWarnLimit }
               },
               [
                 _vm._v(
@@ -21972,7 +21971,7 @@ var render = function() {
           staticClass: "grid entry col-xs-4 service-level",
           class: {
             warn:
-              _vm.data.QueueKeys[0].ServiceLevelPerc <=
+              _vm.data.QueueKeys[0].ServiceLevelPerc <
               _vm.data.ServiceLevelWarnLimit
           }
         },
@@ -22099,7 +22098,7 @@ var render = function() {
               {
                 staticClass: "cell text-center avg-waiting-time",
                 class: {
-                  warn: group.AvgWaitingTimeSec >= _vm.data.AvgWaitingTimeLimit
+                  warn: group.AvgWaitingTimeSec > _vm.data.AvgWaitingTimeLimit
                 }
               },
               [_vm._v(_vm._s(_vm.fmt(group.AvgWaitingTimeSec)))]
@@ -22114,7 +22113,7 @@ var render = function() {
               {
                 staticClass: "cell text-center calls-waiting",
                 class: {
-                  warn: group.ServiceLevelPerc <= _vm.data.ServiceLevelWarnLimit
+                  warn: group.ServiceLevelPerc < _vm.data.ServiceLevelWarnLimit
                 }
               },
               [
@@ -22313,7 +22312,7 @@ var render = function() {
           staticClass: "grid entry col-xs-4 service-level",
           class: {
             warn:
-              _vm.data.AggregateKeys[0].ServiceLevelPerc <=
+              _vm.data.AggregateKeys[0].ServiceLevelPerc <
               _vm.data.ServiceLevelWarnLimit
           }
         },
