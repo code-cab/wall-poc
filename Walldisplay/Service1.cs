@@ -8,6 +8,11 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.Threading;
+using log4net;
+using System.Timers;
+using HiPathProCenterLibrary;
 
 namespace Walldisplay
 {
@@ -29,9 +34,24 @@ namespace Walldisplay
             }
 
             if (!Environment.UserInteractive) EventLog.WriteEntry("Walldisplay webinterface listening at: " + url, EventLogEntryType.Information);
-            Console.WriteLine("Listening at: " + url);
+            logger.Info("Listening at: " + url);
             webApp = WebApp.Start<WebStartup>(url);
             if (!Environment.UserInteractive) EventLog.WriteEntry("Walldisplay started", EventLogEntryType.Information);
+
+            settingIniFile = new IniFile(@"d:\walldisplay\walldisplay.ini");
+            checkLicense();
+            if (validLicense)
+            {
+                SetupOsccConnection();
+                timer1.Interval = 1000;
+                timer1.Elapsed += new System.Timers.ElapsedEventHandler(Timer1_Elapsed);
+                connectionChecktimer2.Interval = 5000;
+                connectionChecktimer2.Elapsed += new System.Timers.ElapsedEventHandler(Timer2_Elapsed);
+                connectionChecktimer2.Enabled = true;
+            }
+            else { logger.Info("Wallboard service not fully started due to invalid license"); }
+
+
 
         }
 
@@ -39,6 +59,10 @@ namespace Walldisplay
         {
             webApp.Dispose();
             EventLog.WriteEntry("Walldisplay stopped", EventLogEntryType.Information);
+
+            DisconnectOsccConnection();
+            // TODO: Add code here to perform any tear-down necessary to stop your service.
+
         }
 
         public void ConsoleStart(string[] args)
@@ -50,5 +74,358 @@ namespace Walldisplay
         {
             OnStop();
         }
+
+        private static HiPathProCenterLibrary.HiPathProCenterManager objOSCC;
+        private static HiPathProCenterLibrary.StatisticsManager objStatMan;
+        private static HiPathProCenterLibrary.AdministrationManager objAdmin;
+        private static HiPathProCenterLibrary.RoutingManager objRoutMan;
+        private static HiPathProCenterLibrary.MediaManager objMediaMan;
+        private static IniFile settingIniFile;
+        private static int numberOfWalldisplays = 0;
+        private static int numberOfWalldisplayLayouts = 0;
+        private static List<Walldisplay> wallDisplayList = new List<Walldisplay>();
+        private static System.Timers.Timer timer1 = new System.Timers.Timer();
+        private static System.Timers.Timer connectionChecktimer2 = new System.Timers.Timer();
+        private static Boolean osccConnected = false;
+        private static Boolean eventFiltersSet = false;
+        private static readonly log4net.ILog logger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static Boolean validLicense = true;
+
+        [STAThread]
+
+        private static void SetupOsccConnection()
+        {
+            logger.Debug("Enter setupOsccConnection()");
+            objOSCC = new HiPathProCenterManager();
+
+
+            // check number of configured walldisplay to licensed amount of walldisplays            
+
+            logger.Info("number of Walldisplay configured in ini file " + int.Parse(settingIniFile.Read("numberOfWalldisplays", "WallDisplay")));
+
+            int numberWBfromIni = int.Parse(settingIniFile.Read("numberOfWalldisplays", "WallDisplay"));
+            logger.Info("number of Walldisplay configured in ini file " + numberWBfromIni);
+            if (numberWBfromIni > numberOfWalldisplays)
+            {
+                logger.Error("Number of configured walldiplays is greater then the number of licensed walldisplays.");
+                logger.Error("Number of walldisplays set the licensed amount.");
+                numberWBfromIni = numberOfWalldisplays;
+            }
+            // end check number of configured walldisplay to licensed amount of walldisplays
+
+            /// create walldisplays
+            for (int j = 1; j <= numberWBfromIni; j++)
+            {
+                wallDisplayList.Add(new Walldisplay(j));
+                logger.Debug("Walldisplay to create : " + numberWBfromIni + ". Just created wallboard nr: " + j );
+            }
+            /// end creating walldisplays
+
+            /// initalize information on walldisplay
+            for (int j = 1; j <= numberWBfromIni; j++)
+            {
+                wallDisplayList.ElementAt(j - 1).setUsersKeylist(settingIniFile.Read("UsersKeys", "WB" + j));
+                wallDisplayList.ElementAt(j - 1).setGroupsKeylist(settingIniFile.Read("GroupsKeys", "WB" + j));
+                wallDisplayList.ElementAt(j - 1).setAggregatesKeylist(settingIniFile.Read("AggregatesKeys", "WB" + j));
+                wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile.Read("QueuesKeys", "WB" + j));
+                wallDisplayList.ElementAt(j - 1).setOutputpath(settingIniFile.Read("webServerPath", "WB" + j));
+                wallDisplayList.ElementAt(j - 1).setTemplate(settingIniFile.Read("wbTemplate", "WB" + j));
+            }
+            /// initalize information on walldisplay
+
+            /// connect to oscc
+            setOsccConnection();
+            /// end connection to oscc
+            /// 
+            ///
+
+
+
+            /// set listen filters and store query id
+            if (osccConnected)
+            {
+                setEventFilters();
+            }
+            else { logger.Info("No event filters set because OSCC is not connected"); }
+        ///objOSCC.ListenForEvents(enHiPathProCenterEventTypes.HiPathProCenterEventType_ServerStateChangedEvents);
+
+        /// end set listen filters and store query id
+        /// subscribe events
+        /// end /// subscribe events
+        ///logger.Debug("statistic state : " + objStatMan.State.ToString());
+
+
+
+    }
+
+        private static void setOsccConnection()
+        {
+            try
+            {
+                //objOSCC.Initialize("6000@192.168.30.58", enEventModes.EventMode_FireEvents);
+                logger.Info("oscc server string = '" + settingIniFile.Read("osccServer", "WallDisplay") + "'");
+                objOSCC.Initialize(settingIniFile.Read("osccServer", "WallDisplay"), enEventModes.EventMode_FireEvents);
+                osccConnected = true;                
+                logger.Info("Info: osscConnected : " + osccConnected);
+            }
+            catch
+            {
+                logger.Info("Error openning connection to oscc server");
+                osccConnected = false;
+            }
+            try
+            {
+                objOSCC.Logon(int.Parse(settingIniFile.Read("LogonUserKey", "WallDisplay")), settingIniFile.Read("password", "WallDisplay"));
+                objStatMan = (HiPathProCenterLibrary.StatisticsManager)objOSCC.HireStatisticsManager(enEventModes.EventMode_FireEvents);
+                objAdmin = (HiPathProCenterLibrary.AdministrationManager)objOSCC.HireAdministrationManager(enEventModes.EventMode_FireEvents);
+                objRoutMan = (HiPathProCenterLibrary.RoutingManager)objOSCC.HireRoutingManager(enEventModes.EventMode_FireEvents);
+                objMediaMan = (HiPathProCenterLibrary.MediaManager)objOSCC.HireMediaManager(enEventModes.EventMode_FireEvents);
+                logger.Debug("Stat funct state Hist     : " + objStatMan.GetFunctionalityState(enStatisticsFunctionalities.StatisticsFunctionality_Historical));
+                logger.Debug("Stat funct state Network  : " + objStatMan.GetFunctionalityState(enStatisticsFunctionalities.StatisticsFunctionality_Network));
+                logger.Debug("Stat funct state realtime : " + objStatMan.GetFunctionalityState(enStatisticsFunctionalities.StatisticsFunctionality_RealTime));
+                logger.Debug("Admin funct state Database    : " + objAdmin.GetFunctionalityState(enAdministrationFunctionalities.AdministrationFunctionality_AdministrationDatabase));
+                logger.Debug("Admin funct state config sync : " + objAdmin.GetFunctionalityState(enAdministrationFunctionalities.AdministrationFunctionality_ConfigurationSynchronization));
+                logger.Debug("Media funct state Voice    : " + objMediaMan.GetFunctionalityState(enMediaFunctionalities.MediaFunctionality_Voice));
+                logger.Debug("Media funct state email    : " + objMediaMan.GetFunctionalityState(enMediaFunctionalities.MediaFunctionality_Email));
+                logger.Debug("Media funct state callback : " + objMediaMan.GetFunctionalityState(enMediaFunctionalities.MediaFunctionality_Callback));
+                logger.Debug("Media funct state webcol   : " + objMediaMan.GetFunctionalityState(enMediaFunctionalities.MediaFunctionality_WebCollaboration));
+                logger.Debug("Routing funct state realtime   : " + objRoutMan.GetFunctionalityState(enRoutingFunctionalities.RoutingFunctionality_RealTime));
+                logger.Debug("Routing funct state local rout : " + objRoutMan.GetFunctionalityState(enRoutingFunctionalities.RoutingFunctionality_LocalRouting));
+                logger.Debug("Routing funct state netw rout  : " + objRoutMan.GetFunctionalityState(enRoutingFunctionalities.RoutingFunctionality_NetworkRouting));
+
+                logger.Debug(" objstat  state : " + objStatMan.State.ToString());
+                logger.Debug(" objmedia state : " + objMediaMan.State.ToString());
+                logger.Debug(" objRout  state : " + objRoutMan.State.ToString());
+                logger.Debug(" objAdmin state : " + objAdmin.State.ToString());
+
+            }
+            catch
+            {
+                logger.Error("Error to logon to oscc server");
+            }
+
+
+        }
+
+        private static void setEventFilters()
+        {
+            try
+            {
+                foreach (Walldisplay wb in wallDisplayList)
+                {
+                    wb.setAggregatesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateRealtimeEvent, wb.getAggregatesKeylist()));
+                    wb.setQueuesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueRealtimeEvent, wb.getQueuesKeylist()));
+                    wb.setUsersRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_UserRealtimeEvent, wb.getUsersKeylist()));
+                    wb.setGroupsRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupRealtimeEvent, wb.getGroupsKeylist()));
+                }
+                eventFiltersSet = true;
+                objOSCC.EventOccurred += ObjOSCC_EventOccurred;
+                objStatMan.EventOccurred += ObjStatMan_EventOccurred;
+
+            }
+            catch
+            {
+                logger.Error("Fout by zetten van events ");
+                eventFiltersSet = false;
+                logger.Error("Stat funct state realtime : " + objStatMan.GetFunctionalityState(enStatisticsFunctionalities.StatisticsFunctionality_RealTime));
+            }
+
+        }
+
+        private static void ObjStatMan_EventOccurred(StatisticsEvent StatisticsEvent)
+        {
+            switch (StatisticsEvent.ObjectType)
+            {
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_ManagerStateChanged:
+                    HiPathProCenterLibrary.ManagerStateChangedEvent oManagerStateChangedEvent = (HiPathProCenterLibrary.ManagerStateChangedEvent)StatisticsEvent;
+                    logger.Debug("procenter statistic event manager state " + oManagerStateChangedEvent.State);
+                    ///oManagerStateChangedEvent.State;
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_AggregateRealtime:
+                    HiPathProCenterLibrary.AggregateRealtimeEvent oAggregateRealtimeEvent = (HiPathProCenterLibrary.AggregateRealtimeEvent)StatisticsEvent;
+                    logger.Debug("procenter statistic event Aggregate " + oAggregateRealtimeEvent.ToString());
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oAggregateRealtimeEvent.QueryID == wb.getAggregatesRTQueryID())
+                        {
+                            wb.setAggregateRTevent(oAggregateRealtimeEvent);
+                        }
+                    }
+
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_UserRealtime:
+                    HiPathProCenterLibrary.UserRealtimeEvent oUserRealtimeEvent = (HiPathProCenterLibrary.UserRealtimeEvent)StatisticsEvent;
+                    logger.Debug("procenter statistic event user realtime :" + oUserRealtimeEvent.ToString());
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oUserRealtimeEvent.QueryID == wb.getUsersRTQueryID())
+                        {
+                            wb.setUserRTevent(oUserRealtimeEvent);
+                        }
+                    }
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_QueueRealtime:
+                    HiPathProCenterLibrary.QueueRealtimeEvent oQueueRealtimeEvent = (HiPathProCenterLibrary.QueueRealtimeEvent)StatisticsEvent;
+                    logger.Debug("procenter stat event queue realtime :" + oQueueRealtimeEvent.QueryID);
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oQueueRealtimeEvent.QueryID == wb.getQueuesRTQueryID())
+                        {
+                            wb.setQueueRTevent(oQueueRealtimeEvent);
+                        }
+                    }
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_GroupRealtime:
+                    HiPathProCenterLibrary.GroupRealtimeEvent oGroupRealtimeEvent = (HiPathProCenterLibrary.GroupRealtimeEvent)StatisticsEvent;
+                    logger.Debug("procenter stat event queue realtime :" + oGroupRealtimeEvent.QueryID);
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oGroupRealtimeEvent.QueryID == wb.getGroupsRTQueryID())
+                        {
+                            wb.setGroupRTevent(oGroupRealtimeEvent);
+                        }
+                    }
+                    break;
+                default:
+                    ///MsgBox "Unknown ObjectType";
+                    logger.Error("stat event default unimplementated object type : " + StatisticsEvent.GetType());
+                    break;
+            }
+
+            ///throw new NotImplementedException();
+        }
+
+        private static void ObjOSCC_EventOccurred(HiPathProCenterEvent HiPathProCenterEvent)
+        {
+            switch (HiPathProCenterEvent.ObjectType)
+            {
+                case enHiPathProCenterEventObjectTypes.HiPathProCenterEventObjectType_ServerStateChanged:
+                    HiPathProCenterLibrary.HiPathProCenterEvent oServerStartChangedEvent = (HiPathProCenterLibrary.HiPathProCenterEvent)HiPathProCenterEvent;
+                    ///throw new NotImplementedException();    
+                    //Console.WriteLine("procenter event: " + oServerStartChangedEvent.ToString());
+                    logger.Info("procenter event: " + oServerStartChangedEvent.ToString());
+                    break;
+                default:
+                    ///throw new NotImplementedException();
+                    logger.Debug("procenter event default. event not processed.");
+                    break;
+            }
+        }
+
+        public static void DisconnectOsccConnection()
+        {
+            logger.Debug("disconnect function");
+            if (eventFiltersSet)
+            {
+                foreach (Walldisplay wb in wallDisplayList)
+                {
+                    objStatMan.StopListeningForEvents(wb.getAggregatesRTQueryID());
+                    objStatMan.StopListeningForEvents(wb.getQueuesRTQueryID());
+                    objStatMan.StopListeningForEvents(wb.getUsersRTQueryID());
+                    objStatMan.StopListeningForEvents(wb.getGroupsRTQueryID());
+                }
+
+                objOSCC.EventOccurred -= ObjOSCC_EventOccurred;
+                objStatMan.EventOccurred -= ObjStatMan_EventOccurred;
+            }
+            timer1.Elapsed -= Timer1_Elapsed;
+            timer1.Enabled = false;
+            connectionChecktimer2.Enabled = false;
+            connectionChecktimer2.Elapsed -= Timer2_Elapsed;
+            // objMediaMan = null; ???
+            logger.Debug("stoped listening to events");
+        }
+
+        private static void checkLicense()
+        {
+
+        //    License wbLicense = new License();
+        //    wbLicense.readLicense();
+        //    logger.Info("Read license Base: " + wbLicense.getBaseLicense());
+        //    logger.Info("Read number of WB: " + wbLicense.getNumberOfWalldisplays());
+        //    logger.Info("Read number of layout: " + wbLicense.getNumberOflayouts());
+        //    logger.Info("Read number of layout: " + wbLicense.getLicencedVersion());
+        //    logger.Info("Read UID from license file: " + wbLicense.getUID());
+
+
+            Database osccDB = new Database();
+            osccDB.setDsn(settingIniFile.Read("DSN", "ODBC"));
+            osccDB.MakeConnection();
+            logger.Debug("OSCC sitekey : " + osccDB.getSitekey());
+            logger.Debug("OSCC cstaAdress: " + osccDB.getCstaAdres());
+            logger.Debug("OSCC db servername: " + osccDB.getServerName());
+
+            string tempAppName = osccDB.getSitekey();
+            tempAppName += osccDB.getServerName();
+            tempAppName += osccDB.getCstaAdres();
+           logger.Debug("contructed appname: " + tempAppName);
+        //    wbLicense.setAppName(tempAppName);
+
+            // check if data was retrieved from database
+        //    if (osccDB.getSitekey() == "-1")
+        //    {
+        //        logger.Error("License UID could not be determined. Check ODBC connection.");
+        //        validLicense = false;
+        //    }
+
+        //    else
+        //    {
+                // check if uuid is the same
+        //        validLicense = wbLicense.doValidation();
+        //        logger.Info("UID calculated from library: " + LicenseHandler.GenerateUID(tempAppName));
+        //    }
+
+        //    logger.Debug("Is license for this system : " + validLicense);
+
+            // assign license amounts
+            if (validLicense)
+            {
+                //  numberOfWalldisplays = wbLicense.getNumberOfWalldisplays();
+                //  numberOfWalldisplayLayouts = wbLicense.getNumberOflayouts();
+                numberOfWalldisplays = 3;
+                numberOfWalldisplayLayouts = 1;
+
+            }
+            // assign license amounts
+
+                osccDB.CloseConnection();
+
+        }
+
+        private static void Timer1_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            logger.Debug("entering timer event");
+            foreach (Walldisplay wb in wallDisplayList)
+            {
+                wb.updateWallBoard();
+                logger.Debug("timer event method in for each loop");
+            }
+        }
+
+        private static void Timer2_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            logger.Debug("Entering timer2 event check connection");
+            //Console.WriteLine("write value from ini file" + settingIniFile.Read("QueuesKeys", "WBX") );
+            if (settingIniFile.Read("liveUpdate", "WallDisplay") == "true")
+            {
+                settingIniFile.Write("liveUpdate", "done", "WallDisplay");
+                logger.Info("Live update executed");
+            }
+
+            if (osccConnected)
+            {
+                if (eventFiltersSet) { timer1.Enabled = true; }
+                else
+                { setEventFilters(); }
+            }
+            else
+            {
+                setOsccConnection();
+            }
+
+
+        }
+
+
     }
 }
