@@ -1,4 +1,6 @@
-﻿using Microsoft.Owin.Hosting;
+﻿using IniParser;
+using IniParser.Model;
+using Microsoft.Owin.Hosting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,8 +40,14 @@ namespace Walldisplay
             webApp = WebApp.Start<WebStartup>(url);
             if (!Environment.UserInteractive) EventLog.WriteEntry("Walldisplay started", EventLogEntryType.Information);
 
-            settingIniFile = new IniFile(@"d:\walldisplay\walldisplay.ini");
+            var parser = new FileIniDataParser();
+            settingIniFile = parser.ReadFile("walldisplay.ini");
+
+            //data.WaitingWarnLimit = Convert.ToInt32(ini["WallDisplay"]["WaitingCallsMax"]);
+            //data.WaitingWarnLimit = Convert.ToInt32(settingIniFile["WallDisplay"]["WaitingCallsMax"]);
+            // settingIniFile = new IniFile(@"d:\walldisplay\walldisplay.ini");
             checkLicense();
+            //DataStore.instance.Data(get);
             if (validLicense)
             {
                 SetupOsccConnection();
@@ -80,7 +88,7 @@ namespace Walldisplay
         private static HiPathProCenterLibrary.AdministrationManager objAdmin;
         private static HiPathProCenterLibrary.RoutingManager objRoutMan;
         private static HiPathProCenterLibrary.MediaManager objMediaMan;
-        private static IniFile settingIniFile;
+        private static IniData settingIniFile;
         private static int numberOfWalldisplays = 0;
         private static int numberOfWalldisplayLayouts = 0;
         private static List<Walldisplay> wallDisplayList = new List<Walldisplay>();
@@ -95,16 +103,15 @@ namespace Walldisplay
 
         private static void SetupOsccConnection()
         {
-            logger.Debug("Enter setupOsccConnection()");
+            logger.Info("Enter setupOsccConnection()");
             objOSCC = new HiPathProCenterManager();
-
 
             // check number of configured walldisplay to licensed amount of walldisplays            
 
-            logger.Info("number of Walldisplay configured in ini file " + int.Parse(settingIniFile.Read("numberOfWalldisplays", "WallDisplay")));
+            logger.Debug("number of Walldisplay configured in ini file " + Convert.ToInt32(settingIniFile["WallDisplay"]["numberOfWalldisplays"]));
 
-            int numberWBfromIni = int.Parse(settingIniFile.Read("numberOfWalldisplays", "WallDisplay"));
-            logger.Info("number of Walldisplay configured in ini file " + numberWBfromIni);
+            int numberWBfromIni = Convert.ToInt32(settingIniFile["WallDisplay"]["numberOfWalldisplays"]);
+            logger.Debug("number of Walldisplay configured in ini file " + numberWBfromIni);
             if (numberWBfromIni > numberOfWalldisplays)
             {
                 logger.Error("Number of configured walldiplays is greater then the number of licensed walldisplays.");
@@ -117,19 +124,19 @@ namespace Walldisplay
             for (int j = 1; j <= numberWBfromIni; j++)
             {
                 wallDisplayList.Add(new Walldisplay(j));
-                logger.Debug("Walldisplay to create : " + numberWBfromIni + ". Just created wallboard nr: " + j );
+                logger.Debug("Number of Walldisplays to create : " + numberWBfromIni + ". Just created wallboard nr: " + j );
             }
             /// end creating walldisplays
 
             /// initalize information on walldisplay
             for (int j = 1; j <= numberWBfromIni; j++)
             {
-                wallDisplayList.ElementAt(j - 1).setUsersKeylist(settingIniFile.Read("UsersKeys", "WB" + j));
-                wallDisplayList.ElementAt(j - 1).setGroupsKeylist(settingIniFile.Read("GroupsKeys", "WB" + j));
-                wallDisplayList.ElementAt(j - 1).setAggregatesKeylist(settingIniFile.Read("AggregatesKeys", "WB" + j));
-                wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile.Read("QueuesKeys", "WB" + j));
-                wallDisplayList.ElementAt(j - 1).setOutputpath(settingIniFile.Read("webServerPath", "WB" + j));
-                wallDisplayList.ElementAt(j - 1).setTemplate(settingIniFile.Read("wbTemplate", "WB" + j));
+                wallDisplayList.ElementAt(j - 1).setUsersKeylist(settingIniFile["WB" + j]["UsersKeys"]);
+                wallDisplayList.ElementAt(j - 1).setGroupsKeylist(settingIniFile["WB" + j]["GroupsKeys"]);
+                wallDisplayList.ElementAt(j - 1).setAggregatesKeylist(settingIniFile["WB" + j]["AggregatesKeys"]);
+                wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile["WB" + j]["QueuesKeys"]);
+                wallDisplayList.ElementAt(j - 1).setOutputpath(settingIniFile["WB" + j]["webServerPath"]);
+                wallDisplayList.ElementAt(j - 1).setTemplate(settingIniFile["WB" + j]["wbTemplate"]);
             }
             /// initalize information on walldisplay
 
@@ -163,8 +170,8 @@ namespace Walldisplay
             try
             {
                 //objOSCC.Initialize("6000@192.168.30.58", enEventModes.EventMode_FireEvents);
-                logger.Info("oscc server string = '" + settingIniFile.Read("osccServer", "WallDisplay") + "'");
-                objOSCC.Initialize(settingIniFile.Read("osccServer", "WallDisplay"), enEventModes.EventMode_FireEvents);
+                logger.Info("oscc server string = '" + settingIniFile["WallDisplay"]["osccServer"] + "'");
+                objOSCC.Initialize(settingIniFile["WallDisplay"]["osccServer"], enEventModes.EventMode_FireEvents);
                 osccConnected = true;                
                 logger.Info("Info: osscConnected : " + osccConnected);
             }
@@ -175,7 +182,7 @@ namespace Walldisplay
             }
             try
             {
-                objOSCC.Logon(int.Parse(settingIniFile.Read("LogonUserKey", "WallDisplay")), settingIniFile.Read("password", "WallDisplay"));
+                objOSCC.Logon(Convert.ToInt32(settingIniFile["WallDisplay"]["LogonUserKey"]), settingIniFile["WallDisplay"]["password"]);
                 objStatMan = (HiPathProCenterLibrary.StatisticsManager)objOSCC.HireStatisticsManager(enEventModes.EventMode_FireEvents);
                 objAdmin = (HiPathProCenterLibrary.AdministrationManager)objOSCC.HireAdministrationManager(enEventModes.EventMode_FireEvents);
                 objRoutMan = (HiPathProCenterLibrary.RoutingManager)objOSCC.HireRoutingManager(enEventModes.EventMode_FireEvents);
@@ -349,7 +356,10 @@ namespace Walldisplay
 
 
             Database osccDB = new Database();
-            osccDB.setDsn(settingIniFile.Read("DSN", "ODBC"));
+
+            logger.Info("OSCC ODBC settings: " + Convert.ToString(settingIniFile.GetKey("DSN")));
+
+            osccDB.setDsn(settingIniFile["ODBC"]["DSN"]);
             osccDB.MakeConnection();
             logger.Debug("OSCC sitekey : " + osccDB.getSitekey());
             logger.Debug("OSCC cstaAdress: " + osccDB.getCstaAdres());
@@ -406,9 +416,9 @@ namespace Walldisplay
         {
             logger.Debug("Entering timer2 event check connection");
             //Console.WriteLine("write value from ini file" + settingIniFile.Read("QueuesKeys", "WBX") );
-            if (settingIniFile.Read("liveUpdate", "WallDisplay") == "true")
+            if (settingIniFile["WallDisplay"]["liveUpdate"] == "true")
             {
-                settingIniFile.Write("liveUpdate", "done", "WallDisplay");
+                settingIniFile["WallDisplay"]["liveUpdate"] = "done";              
                 logger.Info("Live update executed");
             }
 

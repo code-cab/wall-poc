@@ -235,7 +235,7 @@ namespace Walldisplay
             {
                 try
                 {
-                    queuesList.Add(int.Parse(keyString));
+                    queuesList.Add(Convert.ToInt32(keyString));
                 }
                 catch (FormatException e)
                 {

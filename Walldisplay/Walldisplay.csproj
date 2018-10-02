@@ -83,7 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IniFile.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="Walldisplay.cs" />
     <Compile Include="DataStore.cs" />
