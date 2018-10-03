@@ -35,43 +35,19 @@ namespace Walldisplay
         private string usersLine;
         private string aggregatesLine;
         private string groupsLine;
+        private KeysData Data;
         private readonly log4net.ILog wbLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 
         public Walldisplay(int WalldisplayID)
         {
             if ((WalldisplayID > 0) && (WalldisplayID < 50)) { WallDisplayID = WalldisplayID; }
-            queuesLine = "Queue1:2,Queue2:4,Queue3:2,Queue4:2,Queue5:1,Queue6:0";
-            usersLine = "User1:free,User2: logged_off,User3: loggoff,User4: free";
-            aggregatesLine = "Aggr1:2;230;90,Aggr2:1;300;75";
-            groupsLine = "groupnotretrieved";
 
         }
 
         public void updateWallBoard()
         {
-            string wbDataFilePath = outputPath;
-            wbLogger.Debug("wb nr :" + WallDisplayID + ". UpdateWallboard wdDataFilePath: " + wbDataFilePath);
-            wbDataFilePath += "wb" + WallDisplayID + "_data.txt";
-            wbLogger.Debug("wb nr :" + WallDisplayID + ". UpdateWallboard output file: " + wbDataFilePath);
-            try
-            {
-                using (StreamWriter sw = new StreamWriter(@wbDataFilePath))
-                {
-                    sw.WriteLine(queuesLine);
-                    sw.WriteLine(usersLine);
-                    sw.WriteLine(aggregatesLine);
-                    sw.WriteLine(groupsLine);
-                    wbLogger.Debug("wb nr :" + WallDisplayID + ". UpdateWallboard queuesLine: " + queuesLine);
-                    wbLogger.Debug("wb nr :" + WallDisplayID + ". UpdateWallboard usersLine: " + usersLine);
-                    wbLogger.Debug("wb nr :" + WallDisplayID + ". UpdateWallboard aggregatesLine: " + aggregatesLine);
-                    wbLogger.Debug("wb nr :" + WallDisplayID + ". UpdateWallboard groupsLine: " + groupsLine);
-                }
-            }
-            catch
-            {
-                wbLogger.Debug("wb nr :" + WallDisplayID + ". error opening/creating wb.ini file");
-            }
+
         }
 
         public void setOutputpath(string input)
@@ -261,7 +237,7 @@ namespace Walldisplay
             {
                 try
                 {
-                    usersList.Add(int.Parse(keyString));
+                    usersList.Add(int.Parse(keyString));                  
                 }
                 catch (FormatException e)
                 {

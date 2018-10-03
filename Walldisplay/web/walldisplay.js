@@ -20960,7 +20960,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()
@@ -21397,7 +21397,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()
@@ -21575,7 +21575,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()
@@ -21753,7 +21753,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()
@@ -21922,7 +21922,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()
@@ -22091,7 +22091,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()
@@ -22263,7 +22263,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()
@@ -22432,7 +22432,7 @@ var component = Object(__WEBPACK_IMPORTED_MODULE_2__node_modules_vue_loader_lib_
 
 /* hot reload */
 if (false) {
-  var api = require("C:\\proj\\grosc\\walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
+  var api = require("E:\\github\\Walldisplay\\wall-poc\\Walldisplay\\node_modules\\vue-hot-reload-api\\dist\\index.js")
   api.install(require('vue'))
   if (api.compatible) {
     module.hot.accept()

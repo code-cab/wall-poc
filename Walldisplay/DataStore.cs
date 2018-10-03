@@ -100,11 +100,12 @@ namespace Walldisplay
          * 
          **/ 
         public KeysData Data { get; set; }
-
+        // Create a list of datasets, one dataset for each wallboard
+        public List<KeysData> dataList = new List<KeysData>();
 
         void setDemoData()
         {
-            // Demo data
+            // Demo data           
             Data = new KeysData
             {
                 UserKeys = new UserKey[]
@@ -297,6 +298,11 @@ namespace Walldisplay
                         }).ToArray()
                 }
             };
+            // demo data add two dataset (aka wallboard data ) to list
+            dataList.Add(Data);
+            dataList.Add(Data);
+            //
+
         }
 
     }
