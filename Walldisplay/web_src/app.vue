@@ -11,7 +11,10 @@
             <h2>Error retrieving data: {{data.error}}</h2>
         </div>
         <div v-if="data && !data.error">
-            <component v-bind:is="data.View"></component>
+            <component v-if="validateView(data.View)" v-bind:is="data.View"></component>
+            <div v-if="!validateView(data.View)">
+                <h2>Undefined view name: {{data.View}}</h2>
+            </div>
         </div>
     </div>
 </template>
@@ -20,6 +23,16 @@
     import queryString from 'query-string';
 
     const params = queryString.parse(location.search);
+
+    const components = {
+        GroupUserStatistics: require('./modules/group-user-statistics.vue').default,
+        GroupStatistics: require('./modules/group-statistics.vue').default,
+        MultiGroupStatistics: require('./modules/multi-group-statistics.vue').default,
+        QueueStatistics: require('./modules/queue-statistics.vue').default,
+        MultiQueueStatistics: require('./modules/multi-queue-statistics.vue').default,
+        AggregateStatistics: require('./modules/aggregate-statistics.vue').default,
+        HourlyQueueStatistics: require('./modules/hourly-queue-statistics.vue').default,
+    };
 
     export default {
         data() {
@@ -33,7 +46,7 @@
         },
         mounted() {
             if (this.timer) clearInterval(this.timer);
-            this.timer = setInterval(() => this.updateData(), 5000);
+            this.timer = setInterval(() => this.updateData(), 1000);
         },
         destroyed() {
             if (this.timer) {
@@ -47,16 +60,11 @@
                     .fail(e => this.data = {error: e.responseText || e.statusText});
                 $('body').trigger('updated');
             },
+            validateView(view) {
+                return components[view] !== undefined;
+            }
         },
-        components: {
-            GroupUserStatistics: require('./modules/group-user-statistics.vue').default,
-            GroupStatistics: require('./modules/group-statistics.vue').default,
-            MultiGroupStatistics: require('./modules/multi-group-statistics.vue').default,
-            QueueStatistics: require('./modules/queue-statistics.vue').default,
-            MultiQueueStatistics: require('./modules/multi-queue-statistics.vue').default,
-            AggregateStatistics: require('./modules/aggregate-statistics.vue').default,
-            HourlyQueueStatistics: require('./modules/hourly-queue-statistics.vue').default,
-        }
+        components: components
     }
 
 </script>
