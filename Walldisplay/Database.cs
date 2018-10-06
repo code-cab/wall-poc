@@ -21,6 +21,12 @@ namespace Walldisplay
         OdbcConnection conn = new OdbcConnection();
         private string sqlCmdSitekey = "select * from systemparameters where parmname = 'LocalServerName';";
         private string sqlCmdCstaAdres = "select * from systemparameters where parmname = 'TeleSwitchInterfaceModuleHost';";
+        private string sqlCmdQueueName = "select calltypename from calltypes where calltypekey = ";
+        private string sqlCmdgroupName = "select virtualgroupname from virtualgroups where virtualgroupkey = ";
+        private string sqlCmdaggregateName = "select aggregatename from aggregates where aggregatekey = ";
+        private string sqlCmduserName = "select username from users where userkey = ";
+        private string sqlCmduserLastName = "select userlastname from users where userkey = ";
+        private string sqlCmduserFirstName = "select userfirstname from users where userkey = ";
 
         private String Dsn;
 
@@ -63,6 +69,76 @@ namespace Walldisplay
                 dbLogger.Error("error opening db connection : " + ex.ToString());
             }
 
+        }
+
+        public string getUserName(string Key)
+        {
+            String retVal = "Name";
+            try {
+                if (conn.State == ConnectionState.Open)
+                { OdbcCommand myCommand = new OdbcCommand(sqlCmduserName + Key + ";", conn);
+                  OdbcDataReader myReader = myCommand.ExecuteReader();
+                  myReader.Read();
+                  retVal = myReader.GetString(0);
+                }
+                else { retVal = "-1"; }
+                }
+            catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
+            return retVal;
+
+        }
+
+        public string getQueueName(string Key)
+        {
+            String retVal = "Name";
+            try
+            { if (conn.State == ConnectionState.Open)
+                { OdbcCommand myCommand = new OdbcCommand(sqlCmdQueueName + Key + ";", conn);
+                  OdbcDataReader myReader = myCommand.ExecuteReader(); myReader.Read();
+                    retVal = myReader.GetString(0);
+                } else
+                { retVal = "-1"; }
+            }
+            catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
+            return retVal;
+        }
+
+        public string getGroupName(string Key)
+        {
+            String retVal = "Name";
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    OdbcCommand myCommand = new OdbcCommand(sqlCmdgroupName + Key + ";", conn);
+                    OdbcDataReader myReader = myCommand.ExecuteReader();
+                    myReader.Read();
+                    retVal = myReader.GetString(0);
+                }
+                else
+                { retVal = "-1"; }
+            }
+            catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
+            return retVal;
+        }
+
+
+        public string getAggregateName(string Key)
+        {
+            String retVal = "Name";
+            try
+            {
+                if (conn.State == ConnectionState.Open)
+                {
+                    OdbcCommand myCommand = new OdbcCommand(sqlCmdaggregateName + Key + ";", conn);
+                    OdbcDataReader myReader = myCommand.ExecuteReader();
+                    myReader.Read();
+                    retVal = myReader.GetString(0);
+                }
+                else
+                { retVal = "-1"; }
+            } catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
+            return retVal;
         }
 
         public string getSitekey()

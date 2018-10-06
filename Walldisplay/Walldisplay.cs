@@ -61,11 +61,17 @@ namespace Walldisplay
         public void initializeWallBoard()
         {
             KeysData initKeysData = new KeysData();
+
+            Database osccDB = new Database();
+            //wbLogger.Info("OSCC ODBC settings: " + Convert.ToString(settingIniFile.GetKey("DSN")));
+            osccDB.setDsn("OSCC");
+            osccDB.MakeConnection();
+
             foreach (int i in groupsList)
             {
                 groupsDict.AddOrUpdate(i, new GroupKey(), (v, k) => new GroupKey());
                 // belowline should should be replaced by DB query
-                groupsDict[i].GroupName = "groupname" + i;
+                groupsDict[i].GroupName = osccDB.getGroupName(Convert.ToString(i));
                 groupsDict[i].LoggedOn = 1;
                 groupsDict[i].OnRoutedCall = 1;
                 groupsDict[i].OnDirectCall = 1;
@@ -81,7 +87,7 @@ namespace Walldisplay
 
                 usersDict.AddOrUpdate(i, new UserKey(), (v, k) => new UserKey());
                 // belowline should should be replaced by DB query
-                usersDict[i].Name = "username" + i;
+                usersDict[i].Name = osccDB.getUserName(Convert.ToString(i));
                 usersDict[i].State = "ACTIVE";
                 usersDict[i].DurationSec = 0;
                 wbLogger.Info("UserKey name: " + usersDict[i].Name + " of walldiplay nr: " + WallDisplayID);
@@ -93,7 +99,7 @@ namespace Walldisplay
             {
                 aggregatesDict.AddOrUpdate(i, new AggregateKey(), (v, k) => new AggregateKey());
                 // belowline should should be replaced by DB query
-                aggregatesDict[i].GroupName = "aggregatename" + i;
+                aggregatesDict[i].GroupName = osccDB.getAggregateName(Convert.ToString(i));
                 aggregatesDict[i].Received = 0;
                 aggregatesDict[i].Abandoned = 0;
                 aggregatesDict[i].Answered = 0;
@@ -107,7 +113,7 @@ namespace Walldisplay
             {
                 queuesDict.AddOrUpdate(i, new QueueKey(), (v, k) => new QueueKey());
                 // belowline should should be replaced by DB query
-                queuesDict[i].GroupName = "queuesname" + i;
+                queuesDict[i].GroupName = osccDB.getQueueName(Convert.ToString(i));
                 queuesDict[i].Received = 0;
                 queuesDict[i].Abandoned = 0;
                 queuesDict[i].Answered = 0;
@@ -117,6 +123,7 @@ namespace Walldisplay
                 wbLogger.Info("queueKey name: " + queuesDict[i].GroupName + " of walldiplay nr: " + WallDisplayID);
             }
 
+            osccDB.CloseConnection();
             initKeysData.UserKeys = usersDict.Values.ToArray();
             initKeysData.GroupKeys = groupsDict.Values.ToArray();
             initKeysData.AggregateKeys = aggregatesDict.Values.ToArray();
