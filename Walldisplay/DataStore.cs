@@ -55,21 +55,28 @@ namespace Walldisplay
 
     public class KeysData
     {
+        public string View { get; set; }
         public UserKey[] UserKeys { get; set; }
         public GroupKey[] GroupKeys { get; set; }
         public QueueKey[] QueueKeys { get; set; }
         public AggregateKey[] AggregateKeys { get; set; }
         public HourlyQueueKey[][] HourlyQueueKeys { get; set; }
+        public int WaitingWarnLimit { get; set; }
+        public int AvgWaitingTimeLimit { get; set; }
+        public int ServiceLevelWarnLimit { get; set; }
 
         public KeysData()
         {
+            View = string.Empty;
             UserKeys = new UserKey[0];
             GroupKeys = new GroupKey[0];
             QueueKeys = new QueueKey[0];
             AggregateKeys = new AggregateKey[0];
             HourlyQueueKeys = new HourlyQueueKey[0][];
+
         }
     }
+
 
 
     sealed class DataStore
@@ -107,8 +114,7 @@ namespace Walldisplay
          **/ 
         public KeysData Data { get; set; }
         // Create a list of datasets, one dataset for each wallboard
-        public KeysData[] dataArray;
-        public ConcurrentDictionary<String,KeysData> dataDictionary;
+        public ConcurrentDictionary<String, KeysData> dataDictionary = new ConcurrentDictionary<String, KeysData>();
 
         void setDemoData()
         {

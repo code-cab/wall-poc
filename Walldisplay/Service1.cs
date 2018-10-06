@@ -136,6 +136,8 @@ namespace Walldisplay
                 wallDisplayList.ElementAt(j - 1).setGroupsKeylist(settingIniFile["WB" + j]["GroupKeys"]);
                 wallDisplayList.ElementAt(j - 1).setAggregatesKeylist(settingIniFile["WB" + j]["AggregateKeys"]);
                 wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile["WB" + j]["QueueKeys"]);
+                wallDisplayList.ElementAt(j - 1).setView(settingIniFile["WB" + j]["View"]);
+                wallDisplayList.ElementAt(j - 1).initializeWallBoard();
                 /// remove -> wallDisplayList.ElementAt(j - 1).setOutputpath(settingIniFile["WB" + j]["webServerPath"]);
                 /// remove -> wallDisplayList.ElementAt(j - 1).setTemplate(settingIniFile["WB" + j]["wbTemplate"]);
             }

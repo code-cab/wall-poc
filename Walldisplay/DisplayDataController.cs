@@ -38,12 +38,12 @@ namespace Walldisplay
                 IniData ini = parser.ReadFile("walldisplay.ini");
 
                 KeysData keysData = DataStore.Instance.Data;
-                
 
-                Data data = new Data
-                {
-                    View = ini[displayId]["View"]                    
-                };
+
+                KeysData data = new KeysData();
+
+                data.View = ini[displayId]["View"];
+                
 
                 if (data.View == null) throw new ArgumentException("Invalid display id " + displayId);
 
@@ -68,7 +68,8 @@ namespace Walldisplay
 
                 HttpResponseMessage response;
 
-                String json = JsonConvert.SerializeObject(data);
+                //String json = JsonConvert.SerializeObject(data);
+                String json = JsonConvert.SerializeObject(DataStore.Instance.dataDictionary[displayId]);
                 response = Request.CreateResponse(HttpStatusCode.OK);
                 response.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
