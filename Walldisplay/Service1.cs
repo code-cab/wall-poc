@@ -128,15 +128,16 @@ namespace Walldisplay
             }
             /// end creating walldisplays
 
+
             /// initalize information on walldisplay
             for (int j = 1; j <= numberWBfromIni; j++)
             {
-                wallDisplayList.ElementAt(j - 1).setUsersKeylist(settingIniFile["WB" + j]["UsersKeys"]);
-                wallDisplayList.ElementAt(j - 1).setGroupsKeylist(settingIniFile["WB" + j]["GroupsKeys"]);
-                wallDisplayList.ElementAt(j - 1).setAggregatesKeylist(settingIniFile["WB" + j]["AggregatesKeys"]);
-                wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile["WB" + j]["QueuesKeys"]);
-                wallDisplayList.ElementAt(j - 1).setOutputpath(settingIniFile["WB" + j]["webServerPath"]);
-                wallDisplayList.ElementAt(j - 1).setTemplate(settingIniFile["WB" + j]["wbTemplate"]);
+                wallDisplayList.ElementAt(j - 1).setUsersKeylist(settingIniFile["WB" + j]["UserKeys"]);
+                wallDisplayList.ElementAt(j - 1).setGroupsKeylist(settingIniFile["WB" + j]["GroupKeys"]);
+                wallDisplayList.ElementAt(j - 1).setAggregatesKeylist(settingIniFile["WB" + j]["AggregateKeys"]);
+                wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile["WB" + j]["QueueKeys"]);
+                /// remove -> wallDisplayList.ElementAt(j - 1).setOutputpath(settingIniFile["WB" + j]["webServerPath"]);
+                /// remove -> wallDisplayList.ElementAt(j - 1).setTemplate(settingIniFile["WB" + j]["wbTemplate"]);
             }
             /// initalize information on walldisplay
 
@@ -218,6 +219,7 @@ namespace Walldisplay
         {
             try
             {
+
                 foreach (Walldisplay wb in wallDisplayList)
                 {
                     wb.setAggregatesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateRealtimeEvent, wb.getAggregatesKeylist()));

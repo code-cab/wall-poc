@@ -9,12 +9,15 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
+using log4net;
 
 
 namespace Walldisplay
 {
     public class DisplayDataController : ApiController
     {
+        private readonly log4net.ILog wbLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         class Data {
             public String View;
             public UserKey[] UserKeys;
@@ -35,12 +38,16 @@ namespace Walldisplay
                 IniData ini = parser.ReadFile("walldisplay.ini");
 
                 KeysData keysData = DataStore.Instance.Data;
+                
 
                 Data data = new Data
                 {
-                    View = ini[displayId]["View"]
+                    View = ini[displayId]["View"]                    
                 };
+
                 if (data.View == null) throw new ArgumentException("Invalid display id " + displayId);
+
+                wbLogger.Debug("displayDataController fetched walldisplay View :" + data.View);
 
                 Func<string, int[]> getKeys = key => (ini[displayId][key] ?? "").Split(',').Where(s => s.Length > 0).Select(s => Convert.ToInt32(s) - 1).ToArray();
                 

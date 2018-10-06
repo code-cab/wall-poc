@@ -104,6 +104,7 @@ namespace Walldisplay
         {
             aggregateRTEv = ev;
             string line = "";
+            
             foreach (HiPathProCenterLibrary.AggregateRealtimeElement elAggrRT in aggregateRTEv)
             {
                 wbLogger.Debug("wb nr :" + WallDisplayID + ". Aggr element Key: " + elAggrRT.AggregateKey + " abb rate: " + elAggrRT.Contacts);
@@ -126,6 +127,7 @@ namespace Walldisplay
             userRTEv = ev;
             string line = "";
             keyList loggedOffList = new keyList();
+             
             foreach (int i in usersList)
             {
                 loggedOffList.Add(i);
@@ -133,6 +135,7 @@ namespace Walldisplay
             if (userRTEv.Count > 0)
             {
                 foreach (HiPathProCenterLibrary.UserRealtimeElement elUserRT in userRTEv)
+                
                 {
                     wbLogger.Debug("wb nr :" + WallDisplayID + ". User element ext: " + elUserRT.Extension + " abb rate: " + elUserRT.PresenceState);
                     line += "User" + elUserRT.UserKey;
@@ -143,6 +146,7 @@ namespace Walldisplay
                     ///line += ";" + elUserRT.HandlingStates
                     line += ",";
                     loggedOffList.Remove(elUserRT.UserKey);
+                    
                 }
             }
 
