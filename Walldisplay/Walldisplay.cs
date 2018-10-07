@@ -1,4 +1,6 @@
-﻿using System;
+﻿using IniParser;
+using IniParser.Model;
+using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
@@ -17,6 +19,10 @@ namespace Walldisplay
         private int usersRTQueryID;
         private int aggregatesRTQueryID;
         private int groupsRTQueryID;
+        private int queuesCumQueryID;
+        private int usersCumQueryID;
+        private int aggregatesCumQueryID;
+        private int groupsCumQueryID;
         private List<int> queuesList = new List<int>();
         private List<int> usersList = new List<int>();
         private List<int> aggregatesList = new List<int>();
@@ -26,15 +32,23 @@ namespace Walldisplay
         private HiPathProCenterLibrary.UserRealtimeEvent userRTEv;
         private HiPathProCenterLibrary.QueueRealtimeEvent queueRTEv;
         private HiPathProCenterLibrary.GroupRealtimeEvent groupRTEv;
-        private HiPathProCenterLibrary.Queues queuesCol;
-        private HiPathProCenterLibrary.Users usersCol;
-        private HiPathProCenterLibrary.Groups groupsCol;
-        private HiPathProCenterLibrary.Aggregates aggregatesCol;
+        private HiPathProCenterLibrary.QueueCumulativeEvent queueCumEv;
+        private HiPathProCenterLibrary.GroupCumulativeEvent groupCumEv;
+        private HiPathProCenterLibrary.UserCumulativeEvent userCumEv;
+        private HiPathProCenterLibrary.AggregateCumulativeEvent aggregateCumEv;
         private int WallDisplayID;
         private ConcurrentDictionary<int, QueueKey> queuesDict = new ConcurrentDictionary<int, QueueKey>();
         private ConcurrentDictionary<int, UserKey> usersDict = new ConcurrentDictionary<int, UserKey>();
         private ConcurrentDictionary<int, AggregateKey> aggregatesDict = new ConcurrentDictionary<int, AggregateKey>();
         private ConcurrentDictionary<int, GroupKey> groupsDict = new ConcurrentDictionary<int, GroupKey>();
+        private Dictionary<string, string> agentStatusDict = new Dictionary<string, string>
+                                       {
+                                        { "RoutingState_Available", "IDLE" },
+                                        { "RoutingState_Unknown", "IDLE" },
+                                        { "RoutingState_Unavailable", "AWAY" },
+                                        { "RoutingState_Work", "ACTIVE" }
+                                       };
+
 
         private readonly log4net.ILog wbLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
@@ -53,7 +67,7 @@ namespace Walldisplay
             initKeysData.GroupKeys = groupsDict.Values.ToArray();
             initKeysData.AggregateKeys = aggregatesDict.Values.ToArray();
             initKeysData.QueueKeys = queuesDict.Values.ToArray();
-            //initKeysData.View = wbView;
+            initKeysData.View = wbView;
             DataStore.Instance.dataDictionary.AddOrUpdate("WB" + WallDisplayID, initKeysData, (k, v) => initKeysData);
 
         }
@@ -63,8 +77,11 @@ namespace Walldisplay
             KeysData initKeysData = new KeysData();
 
             Database osccDB = new Database();
-            //wbLogger.Info("OSCC ODBC settings: " + Convert.ToString(settingIniFile.GetKey("DSN")));
-            osccDB.setDsn("OSCC");
+            var parser = new FileIniDataParser();
+            IniData settingIniFile = parser.ReadFile("walldisplay.ini");
+
+            wbLogger.Info("OSCC ODBC settings: " + Convert.ToString(settingIniFile.GetKey("DSN")));
+            osccDB.setDsn(settingIniFile["ODBC"]["DSN"]);
             osccDB.MakeConnection();
 
             foreach (int i in groupsList)
@@ -88,7 +105,7 @@ namespace Walldisplay
                 usersDict.AddOrUpdate(i, new UserKey(), (v, k) => new UserKey());
                 // belowline should should be replaced by DB query
                 usersDict[i].Name = osccDB.getUserName(Convert.ToString(i));
-                usersDict[i].State = "ACTIVE";
+                usersDict[i].State = "Away";
                 usersDict[i].DurationSec = 0;
                 wbLogger.Info("UserKey name: " + usersDict[i].Name + " of walldiplay nr: " + WallDisplayID);
             }
@@ -133,50 +150,10 @@ namespace Walldisplay
 
         }
 
-
         public void setView(string input)
         {
             wbView = input;
-
-        }
-
-
-        public void setQueuesCol(HiPathProCenterLibrary.Queues col)
-        {
-            queuesCol = col;
-
-            foreach (HiPathProCenterLibrary.Queue objQueue in queuesCol)
-            {
-            }
-
-
-        }
-
-        public void setUsersCol(HiPathProCenterLibrary.Users col)
-        {
-            usersCol = col;
-            foreach (HiPathProCenterLibrary.User objUser in usersCol)
-            {
-            }
-
-        }
-
-        public void setGroupsCol(HiPathProCenterLibrary.Groups col)
-        {
-            groupsCol = col;
-            foreach (HiPathProCenterLibrary.Group objGroup in groupsCol)
-            {
-            }
-
-        }
-
-        public void setAggregatesCol(HiPathProCenterLibrary.Aggregates col)
-        {
-            aggregatesCol = col;
-            foreach (HiPathProCenterLibrary.Aggregate objAggregate in aggregatesCol)
-            {
-            }
-
+            wbLogger.Debug("wb view :" + wbView + " voor walldiplay id: "+ WallDisplayID );
         }
 
         public void setAggregateRTevent(HiPathProCenterLibrary.AggregateRealtimeEvent ev)
@@ -191,6 +168,8 @@ namespace Walldisplay
             }
 
             var retAggregateKeys = new AggregateKey[aggregatesDict.Count];
+            wbLogger.Debug("Parsing RT aggregatesDictCount: " + aggregatesDict.Count);
+            wbLogger.Debug("return values RT aggregatesDictValues: " + aggregatesDict.Values.ToString());
             retAggregateKeys = aggregatesDict.Values.ToArray();
             DataStore.Instance.dataDictionary["WB" + WallDisplayID].AggregateKeys = retAggregateKeys;
 
@@ -211,22 +190,24 @@ namespace Walldisplay
 
                 {
                     wbLogger.Debug("wb nr :" + WallDisplayID + ". User element ext: " + elUserRT.Extension + " abb rate: " + elUserRT.PresenceState);
-                    usersDict[elUserRT.UserKey].State = elUserRT.RoutingState.ToString();
+                    usersDict[elUserRT.UserKey].State = agentStatusDict[elUserRT.RoutingState.ToString()];
                     usersDict[elUserRT.UserKey].DurationSec = elUserRT.TimeInRoutingState;
                     loggedOffList.Remove(elUserRT.UserKey);
+                    wbLogger.Debug("Parsing RT User event of user key: " + elUserRT.UserKey+ " with userDict : "  + usersDict[elUserRT.UserKey].ToString() );
                 }
             }
 
             foreach (int i in loggedOffList)
             {
-                usersDict[i].State = "Logged off";
+                usersDict[i].State = "Away";
                 usersDict[i].DurationSec = 0;
             }
 
             var retUserKeys = new UserKey[usersDict.Count];
+            wbLogger.Debug("Parsing RT UserDictCount: " + usersDict.Count);
+            wbLogger.Debug("return values RT UserDictValues: " + usersDict.Values.ToString());
             retUserKeys = usersDict.Values.ToArray();
             DataStore.Instance.dataDictionary["WB" + WallDisplayID].UserKeys = retUserKeys;
-
         }
 
         public void setQueueRTevent(HiPathProCenterLibrary.QueueRealtimeEvent ev)
@@ -241,9 +222,114 @@ namespace Walldisplay
             }
 
             var retQueueKeys = new QueueKey[queuesDict.Count];
+            wbLogger.Debug("Parsing RT QueuesDictCount: " + queuesDict.Count);
+            wbLogger.Debug("return values RT QueuesDictValues: " + queuesDict.Values.ToString());
+
             retQueueKeys = queuesDict.Values.ToArray();
             DataStore.Instance.dataDictionary["WB" + WallDisplayID].QueueKeys = retQueueKeys;
 
+        }
+
+        public void setQueuesCumEvent(HiPathProCenterLibrary.QueueCumulativeEvent ev)
+        {
+            wbLogger.Info("wb nr :" + WallDisplayID + " entering SetQueuesCumEvent");
+            wbLogger.Info("wb nr :" + WallDisplayID + " queue cumulative ev count: " + ev.Count);
+            wbLogger.Info("wb nr :" + WallDisplayID + " queue cumulative ev get Type: " + ev.GetType());
+            foreach (HiPathProCenterLibrary.TimeRange timerangeCUM in ev)
+            {                
+                wbLogger.Info("wb nr :" + WallDisplayID + ". queue timerange cumulative event count : " + timerangeCUM.Count);
+                wbLogger.Info("wb nr :" + WallDisplayID + ". queue timerangeDateString : " + timerangeCUM.TimeRange.ToLongDateString() );
+                wbLogger.Info("wb nr :" + WallDisplayID + ". queue timerangeTimeString : " + timerangeCUM.TimeRange.ToLongTimeString());
+                foreach (HiPathProCenterLibrary.QueueCumulativeElement elQueueCum in timerangeCUM)
+                {   
+                    wbLogger.Info("wb nr :" + WallDisplayID + ". Queue cumulative element key: " + elQueueCum.QueueKey + " Q Reveived: " + elQueueCum.Received );
+                    ///queuesDict[elQueueRT.QueueKey].Abandoned = elQueueRT.AbandonedRate;
+                    queuesDict[elQueueCum.QueueKey].Received = elQueueCum.Received;
+                    queuesDict[elQueueCum.QueueKey].Abandoned = elQueueCum.Abandoned;
+                    queuesDict[elQueueCum.QueueKey].Answered = elQueueCum.Answered;
+                    queuesDict[elQueueCum.QueueKey].AvgWaitingTimeSec = (int)Math.Round(elQueueCum.AverageWaitTime);
+                    queuesDict[elQueueCum.QueueKey].MaxWaitingTimeSec = elQueueCum.MaximumWaitTime;
+                }
+            }
+            var retQueueKeys = new QueueKey[queuesDict.Count];
+            wbLogger.Debug("Parsing Cumulative QueuesDictCount: " + queuesDict.Count);
+            wbLogger.Debug("return values Cumulative QueuesDictValues: " + queuesDict.Values.ToString());
+
+            retQueueKeys = queuesDict.Values.ToArray();
+            DataStore.Instance.dataDictionary["WB" + WallDisplayID].QueueKeys = retQueueKeys;
+
+        }
+
+        public void setAggregatesCumEvent(HiPathProCenterLibrary.AggregateCumulativeEvent ev)
+        {
+            wbLogger.Info("wb nr :" + WallDisplayID + " entering SetAggregatesCumEvent");
+            wbLogger.Info("wb nr :" + WallDisplayID + " Aggregate Cumulative event count: " + ev.Count);
+            foreach (HiPathProCenterLibrary.TimeRange timerangeCUM in ev)
+            {
+                wbLogger.Info("wb nr :" + WallDisplayID + ". aggr timerangeDateString : " + timerangeCUM.TimeRange.ToLongDateString());
+                wbLogger.Info("wb nr :" + WallDisplayID + ". aggr timerangeTimeString : " + timerangeCUM.TimeRange.ToLongTimeString());
+                foreach (HiPathProCenterLibrary.AggregateCumulativeElement elAggregateCum in timerangeCUM)
+                {
+                    wbLogger.Info("wb nr :" + WallDisplayID + ". aggr element key: " + elAggregateCum.AggregateKey + " aggr Reveived: " + elAggregateCum.Received);
+                    aggregatesDict[elAggregateCum.AggregateKey].Received = elAggregateCum.Received;
+                    aggregatesDict[elAggregateCum.AggregateKey].Abandoned = elAggregateCum.Abandoned;
+                    aggregatesDict[elAggregateCum.AggregateKey].Answered = elAggregateCum.Answered;
+                    aggregatesDict[elAggregateCum.AggregateKey].AvgWaitingTimeSec = (int)Math.Round(elAggregateCum.AverageWaitTime);
+                    aggregatesDict[elAggregateCum.AggregateKey].MaxWaitingTimeSec = elAggregateCum.MaximumWaitTime;
+                }
+            }
+            var retAggregateKeys = new AggregateKey[aggregatesDict.Count];
+            wbLogger.Debug("Parsing Cumulative aggregatesDictCount: " + aggregatesDict.Count);
+            wbLogger.Debug("return values Cumulative aggregatesDictValues: " + aggregatesDict.Values.ToString());
+
+            retAggregateKeys = aggregatesDict.Values.ToArray();
+            DataStore.Instance.dataDictionary["WB" + WallDisplayID].AggregateKeys = retAggregateKeys;
+        }
+
+        public void setUsersCumEvent(HiPathProCenterLibrary.UserCumulativeEvent ev)
+        {
+            wbLogger.Info("wb nr :" + WallDisplayID + " entering SetUsersCumEvent");
+            wbLogger.Info("wb nr :" + WallDisplayID + " User cumulative event count: " + ev.Count);
+            foreach (HiPathProCenterLibrary.TimeRange timerangeCUM in ev)
+            {
+                wbLogger.Info("wb nr :" + WallDisplayID + ". user timerangeDateString : " + timerangeCUM.TimeRange.ToLongDateString());
+                wbLogger.Info("wb nr :" + WallDisplayID + ". user timerangeTimeString : " + timerangeCUM.TimeRange.ToLongTimeString());
+                foreach (HiPathProCenterLibrary.UserCumulativeElement elUserCum in timerangeCUM)
+                {
+                    wbLogger.Info("wb nr :" + WallDisplayID + ". user element key: " + elUserCum.UserKey + " U handeled: " + elUserCum.Handled);
+                    ///queuesDict[elQueueRT.QueueKey].Abandoned = elQueueRT.AbandonedRate;
+                    // usersDict[elUserCum.UserKey].TotalTalkTime = elUserCum.TotalTalkTime;
+                }
+            }
+            var retUserKeys = new UserKey[usersDict.Count];
+            wbLogger.Debug("Parsing Cumulative usersDictCount: " + usersDict.Count);
+            wbLogger.Debug("return values Cumulative usersDictValues: " + usersDict.Values.ToString());
+
+            retUserKeys = usersDict.Values.ToArray();
+            DataStore.Instance.dataDictionary["WB" + WallDisplayID].UserKeys = retUserKeys;
+        }
+
+        public void setGroupsCumEvent(HiPathProCenterLibrary.GroupCumulativeEvent ev)
+        {
+            wbLogger.Info("wb nr :" + WallDisplayID + " entering SetGroupsCumEvent");
+            wbLogger.Info("wb nr :" + WallDisplayID + " Group cumulative event count: " + ev.Count);
+            foreach (HiPathProCenterLibrary.TimeRange timerangeCUM in ev)
+            {
+                wbLogger.Info("wb nr :" + WallDisplayID + ". group timerangeDateString : " + timerangeCUM.TimeRange.ToLongDateString());
+                wbLogger.Info("wb nr :" + WallDisplayID + ". group timerangeTimeString : " + timerangeCUM.TimeRange.ToLongTimeString());
+                foreach (HiPathProCenterLibrary.GroupCumulativeElement elGroupCum in timerangeCUM)
+                {
+                    wbLogger.Debug("wb nr :" + WallDisplayID + ". Group Cumulative element key: " + elGroupCum.GroupKey + " G Received: " + elGroupCum.Received);
+                    ///queuesDict[elQueueRT.QueueKey].Abandoned = elQueueRT.AbandonedRate;
+                    ///groupsDict[elGroupCum.GroupKey]. = elGroupCum.Received
+                }
+            }
+            var retGroupKeys = new GroupKey[groupsDict.Count];
+            wbLogger.Debug("Parsing Cumulative groupsDictCount: " + groupsDict.Count);
+            wbLogger.Debug("return values Cumulative groupsDictValues: " + groupsDict.Values.ToString());
+
+            retGroupKeys = groupsDict.Values.ToArray();
+            DataStore.Instance.dataDictionary["WB" + WallDisplayID].GroupKeys = retGroupKeys;
         }
 
         public void setGroupRTevent(HiPathProCenterLibrary.GroupRealtimeEvent ev)
@@ -251,13 +337,20 @@ namespace Walldisplay
             groupRTEv = ev;
             foreach (HiPathProCenterLibrary.GroupRealtimeElement elGroupRT in groupRTEv)
             {
-                wbLogger.Debug("wb nr :" + WallDisplayID + ". Group element key: " + elGroupRT.GroupKey + " Q Contacts: " + elGroupRT.LoggedOnUsers);
-                groupsDict[elGroupRT.GroupKey].LoggedOn = elGroupRT.LoggedOnUsers;
+                wbLogger.Debug("wb nr :" + WallDisplayID + ". Group RT element key: " + elGroupRT.GroupKey + " Q LoggonOnUsers: " + elGroupRT.LoggedOnUsers);
+                groupsDict[elGroupRT.GroupKey].Away = elGroupRT.AwayUsers;
                 groupsDict[elGroupRT.GroupKey].Busy = elGroupRT.BusyUsers;
                 groupsDict[elGroupRT.GroupKey].CallsWaiting = elGroupRT.CallsWaiting;
+                groupsDict[elGroupRT.GroupKey].Idle = elGroupRT.IdleUsers;
+                groupsDict[elGroupRT.GroupKey].LoggedOn = elGroupRT.LoggedOnUsers;
+                groupsDict[elGroupRT.GroupKey].OnDirectCall = elGroupRT.HandlingDirectUsers;
+                groupsDict[elGroupRT.GroupKey].OnRoutedCall = elGroupRT.HandlingRoutedUsers;
+
             }
             var retGroupKeys = new GroupKey[groupsDict.Count];
+            wbLogger.Debug("Parsing RT groupsDictCount: " + groupsDict.Count);            
             retGroupKeys = groupsDict.Values.ToArray();
+            wbLogger.Debug("return values RT groupsDictValues: " + groupsDict.Values.ToString());
             DataStore.Instance.dataDictionary["WB" + WallDisplayID].GroupKeys = retGroupKeys;
         }
 
@@ -367,6 +460,46 @@ namespace Walldisplay
             foreach (int i in aggregatesList)
             { retKeyList.Add(i); }
             return retKeyList;
+        }
+
+        public void setAggregatesCumQueryID(int queryID)
+        {
+            aggregatesCumQueryID = queryID;
+        }
+
+        public int getAggregatesCumQueryID()
+        {
+            return aggregatesCumQueryID;
+        }
+
+        public void setQueuesCumQueryID(int queryID)
+        {
+            queuesCumQueryID = queryID;
+        }
+
+        public int getQueuesCumQueryID()
+        {
+            return queuesCumQueryID;
+        }
+
+        public void setUsersCumQueryID(int queryID)
+        {
+            usersCumQueryID = queryID;
+        }
+
+        public int getUsersCumQueryID()
+        {
+            return usersCumQueryID;
+        }
+
+        public void setGroupsCumQueryID(int queryID)
+        {
+            groupsCumQueryID = queryID;
+        }
+
+        public int getGroupsCumQueryID()
+        {
+            return groupsCumQueryID;
         }
 
         public void setQueuesRTQueryID(int queryID)

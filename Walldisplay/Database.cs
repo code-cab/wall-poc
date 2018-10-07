@@ -79,9 +79,17 @@ namespace Walldisplay
                 { OdbcCommand myCommand = new OdbcCommand(sqlCmduserName + Key + ";", conn);
                   OdbcDataReader myReader = myCommand.ExecuteReader();
                   myReader.Read();
-                  retVal = myReader.GetString(0);
+                    if (myReader.HasRows)
+                    {
+                        retVal = myReader.GetString(0);
+                    }
+                    else
+                    {
+                        dbLogger.Error("error. user with key: " + Key + " does not exist");
+                        retVal = "UserDoesNotExist";
+                    }
                 }
-                else { retVal = "-1"; }
+                else { retVal = "NoDBConnection"; }
                 }
             catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
             return retVal;
@@ -95,9 +103,16 @@ namespace Walldisplay
             { if (conn.State == ConnectionState.Open)
                 { OdbcCommand myCommand = new OdbcCommand(sqlCmdQueueName + Key + ";", conn);
                   OdbcDataReader myReader = myCommand.ExecuteReader(); myReader.Read();
-                    retVal = myReader.GetString(0);
+                    if (myReader.HasRows)
+                    {
+                        retVal = myReader.GetString(0);
+                    }
+                    else {
+                        dbLogger.Error("error. queue with key: " + Key + " does not exist");
+                        retVal = "QueueDoesNotExist";
+                    }
                 } else
-                { retVal = "-1"; }
+                { retVal = "NoDBConnection"; }
             }
             catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
             return retVal;
@@ -113,10 +128,18 @@ namespace Walldisplay
                     OdbcCommand myCommand = new OdbcCommand(sqlCmdgroupName + Key + ";", conn);
                     OdbcDataReader myReader = myCommand.ExecuteReader();
                     myReader.Read();
-                    retVal = myReader.GetString(0);
+                    if (myReader.HasRows)
+                    {
+                        retVal = myReader.GetString(0);
+                    }
+                    else
+                    {
+                        dbLogger.Error("error. group with key: " + Key + " does not exist");
+                        retVal = "GroupDoesNotExist";
+                    }
                 }
                 else
-                { retVal = "-1"; }
+                { retVal = "NoDBConnection"; }
             }
             catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
             return retVal;
@@ -133,10 +156,19 @@ namespace Walldisplay
                     OdbcCommand myCommand = new OdbcCommand(sqlCmdaggregateName + Key + ";", conn);
                     OdbcDataReader myReader = myCommand.ExecuteReader();
                     myReader.Read();
-                    retVal = myReader.GetString(0);
+                    if (myReader.HasRows)
+                    {
+                        retVal = myReader.GetString(0);
+                    }
+                    else
+                    {
+                        dbLogger.Error("error. aggregate with key: " + Key + " does not exist");
+                        retVal = "AggrDoesNotExist";
+                    }
+                    
                 }
                 else
-                { retVal = "-1"; }
+                { retVal = "NoDBConnection"; }
             } catch (OdbcException ex) { dbLogger.Error("error getting sitekey : " + ex.ToString()); }
             return retVal;
         }

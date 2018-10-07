@@ -10,7 +10,6 @@ namespace Walldisplay
 {
     public class UserKey
     {
-        public int Key { get; set; }
         public string Name { get; set; }
         public string State { get; set; }
         public int DurationSec { get; set; }
@@ -18,7 +17,6 @@ namespace Walldisplay
     
     public class GroupKey
     {
-        public int Key { get; set; }
         public string GroupName { get; set; }
         public int LoggedOn { get; set; }
         public int OnRoutedCall { get; set; }
@@ -32,7 +30,6 @@ namespace Walldisplay
 
     public class QueueKey
     {
-        public int Key { get; set; }
         public string GroupName { get; set; }
         /// public string QueueName { get; set; }
         public int Received { get; set; }
@@ -67,7 +64,7 @@ namespace Walldisplay
 
         public KeysData()
         {
-            View = string.Empty;
+            View = "initview";
             UserKeys = new UserKey[0];
             GroupKeys = new GroupKey[0];
             QueueKeys = new QueueKey[0];
@@ -125,70 +122,60 @@ namespace Walldisplay
                 {
                     new UserKey
                     {
-                        Key = 2,
                         Name = "John",
                         State = "ACTIVE",
                         DurationSec = 42
                     },
                     new UserKey
                     {
-                        Key = 3,
                         Name = "Sue",
                         State = "IDLE",
                         DurationSec = 192
                     },
                     new UserKey
                     {
-                        Key = 4,
                         Name = "Paul",
                         State = "ACTIVE",
                         DurationSec = 8 * 60 + 1
                     },
                     new UserKey
                     {
-                        Key = 5,
                         Name = "Matt",
                         State = "AWAY",
                         DurationSec = 24 * 60 + 42
                     },
                     new UserKey
                     {
-                        Key = 6,
                         Name = "Anna",
                         State = "IDLE",
                         DurationSec = 5
                     },
                     new UserKey
                     {
-                        Key = 9,
                         Name = "Peter",
                         State = "ACTIVE",
                         DurationSec = 83
                     },
                     new UserKey
                     {
-                        Key = 10,
                         Name = "Steve",
                         State = "ACTIVE",
                         DurationSec = 5*60 + 56
                     },
                     new UserKey
                     {
-                        Key = 11,
                         Name = "Lee",
                         State = "IDLE",
                         DurationSec = 7
                     },
                     new UserKey
                     {
-                        Key = 14,
                         Name = "Ali",
                         State = "ACTIVE",
                         DurationSec = 103
                     },
                     new UserKey
                     {
-                        Key = 15,
                         Name = "Tyrone",
                         State = "ACTIVE",
                         DurationSec = 2*60+56
@@ -198,7 +185,6 @@ namespace Walldisplay
                 {
                     new GroupKey
                     {
-                        Key = 1,
                         GroupName = "Group A",
                         LoggedOn = 20,
                         OnRoutedCall = 4,
@@ -210,7 +196,6 @@ namespace Walldisplay
                     },
                     new GroupKey
                     {
-                        Key = 2,
                         GroupName = "Group B",
                         LoggedOn = 2,
                         OnRoutedCall = 1,
@@ -222,7 +207,6 @@ namespace Walldisplay
                     },
                     new GroupKey
                     {
-                        Key = 3,
                         GroupName = "Group C",
                         LoggedOn = 20,
                         OnRoutedCall = 4,
@@ -234,7 +218,6 @@ namespace Walldisplay
                     },
                     new GroupKey
                     {
-                        Key = 4,
                         GroupName = "Group D",
                         LoggedOn = 20,
                         OnRoutedCall = 4,
@@ -249,7 +232,6 @@ namespace Walldisplay
                 {
                     new QueueKey
                     {
-                        Key = 1,
                         GroupName = "Queue A - Helpdesk",
                         Received = 32,
                         Abandoned = 3,
@@ -260,7 +242,6 @@ namespace Walldisplay
                     },
                     new QueueKey
                     {
-                        Key = 2,
                         GroupName = "Queue B - Facilities",
                         Received = 32,
                         Abandoned = 3,
@@ -271,7 +252,6 @@ namespace Walldisplay
                     },
                     new QueueKey
                     {
-                        Key = 3,
                         GroupName = "Queue C",
                         Received = 32,
                         Abandoned = 3,
@@ -282,7 +262,6 @@ namespace Walldisplay
                     },
                     new QueueKey
                     {
-                        Key = 4,
                         GroupName = "Queue D",
                         Received = 32,
                         Abandoned = 3,
@@ -297,7 +276,6 @@ namespace Walldisplay
                 {
                     new AggregateKey
                     {
-                        Key = 1,
                         GroupName = "XYZ",
                         Received = 66,
                         Abandoned = 8,

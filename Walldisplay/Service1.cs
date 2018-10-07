@@ -138,8 +138,6 @@ namespace Walldisplay
                 wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile["WB" + j]["QueueKeys"]);
                 wallDisplayList.ElementAt(j - 1).setView(settingIniFile["WB" + j]["View"]);
                 wallDisplayList.ElementAt(j - 1).initializeWallBoard();
-                /// remove -> wallDisplayList.ElementAt(j - 1).setOutputpath(settingIniFile["WB" + j]["webServerPath"]);
-                /// remove -> wallDisplayList.ElementAt(j - 1).setTemplate(settingIniFile["WB" + j]["wbTemplate"]);
             }
             /// initalize information on walldisplay
 
@@ -228,6 +226,12 @@ namespace Walldisplay
                     wb.setQueuesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueRealtimeEvent, wb.getQueuesKeylist()));
                     wb.setUsersRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_UserRealtimeEvent, wb.getUsersKeylist()));
                     wb.setGroupsRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupRealtimeEvent, wb.getGroupsKeylist()));
+
+                    wb.setAggregatesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateCumulativeEvent, wb.getAggregatesKeylist()));
+                    wb.setQueuesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueCumulativeEvent, wb.getQueuesKeylist()));
+                    //wb.setGroupsCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupCumulativeEvent, wb.getGroupsKeylist()));
+                    //wb.setUsersCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_UserCumulativeEvent, wb.getUsersKeylist()));
+
                 }
                 eventFiltersSet = true;
                 objOSCC.EventOccurred += ObjOSCC_EventOccurred;
@@ -294,6 +298,50 @@ namespace Walldisplay
                         if (oGroupRealtimeEvent.QueryID == wb.getGroupsRTQueryID())
                         {
                             wb.setGroupRTevent(oGroupRealtimeEvent);
+                        }
+                    }
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_QueueCumulative:
+                    HiPathProCenterLibrary.QueueCumulativeEvent oQueuesCumEvent = (HiPathProCenterLibrary.QueueCumulativeEvent)StatisticsEvent;
+                    logger.Info("procenter stat event queue Cumulative :" + oQueuesCumEvent.QueryID);
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oQueuesCumEvent.QueryID == wb.getQueuesCumQueryID())
+                        {
+                            wb.setQueuesCumEvent(oQueuesCumEvent);
+                        }
+                    }
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_UserCumulative:
+                    HiPathProCenterLibrary.UserCumulativeEvent oUsersCumEvent = (HiPathProCenterLibrary.UserCumulativeEvent)StatisticsEvent;
+                    logger.Info("procenter stat event users Cumulative :" + oUsersCumEvent.QueryID);
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oUsersCumEvent.QueryID == wb.getUsersCumQueryID())
+                        {
+                            //wb.setUsersCumEvent(oUsersCumEvent);
+                        }
+                    }
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_GroupCumulative:
+                    HiPathProCenterLibrary.GroupCumulativeEvent oGroupsCumEvent = (HiPathProCenterLibrary.GroupCumulativeEvent)StatisticsEvent;
+                    logger.Info("procenter stat event groups Cumulative :" + oGroupsCumEvent.QueryID);
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oGroupsCumEvent.QueryID == wb.getGroupsCumQueryID())
+                        {
+                            wb.setGroupsCumEvent(oGroupsCumEvent);
+                        }
+                    }
+                    break;
+                case enStatisticsEventObjectTypes.StatisticsEventObjectType_AggregateCumulative:
+                    HiPathProCenterLibrary.AggregateCumulativeEvent oAggregatesCumEvent = (HiPathProCenterLibrary.AggregateCumulativeEvent)StatisticsEvent;
+                    logger.Info("procenter stat event groups Cumulative :" + oAggregatesCumEvent.QueryID);
+                    foreach (Walldisplay wb in wallDisplayList)
+                    {
+                        if (oAggregatesCumEvent.QueryID == wb.getAggregatesCumQueryID())
+                        {
+                            wb.setAggregatesCumEvent(oAggregatesCumEvent);
                         }
                     }
                     break;
@@ -396,7 +444,7 @@ namespace Walldisplay
             {
                 //  numberOfWalldisplays = wbLicense.getNumberOfWalldisplays();
                 //  numberOfWalldisplayLayouts = wbLicense.getNumberOflayouts();
-                numberOfWalldisplays = 3;
+                numberOfWalldisplays = 10;
                 numberOfWalldisplayLayouts = 1;
 
             }
@@ -411,7 +459,8 @@ namespace Walldisplay
             logger.Debug("entering timer event");
             foreach (Walldisplay wb in wallDisplayList)
             {
-                wb.updateWallBoard();
+                // Below line is obsolete, the frontend retrieves data from datastore on intervals
+                //wb.updateWallBoard();
                 logger.Debug("timer event method in for each loop");
             }
         }
