@@ -46,7 +46,10 @@ namespace Walldisplay
                                         { "RoutingState_Available", "IDLE" },
                                         { "RoutingState_Unknown", "IDLE" },
                                         { "RoutingState_Unavailable", "AWAY" },
-                                        { "RoutingState_Work", "ACTIVE" }
+                                        { "RoutingState_Work", "ACTIVE" },
+                                        { "HandlingState_Ringing", "Ringing" },
+                                        { "HandlingState_Holding", "Hold" },
+                                        { "HandlingState_Talking", "Talking" }
                                        };
 
 
@@ -190,8 +193,25 @@ namespace Walldisplay
 
                 {
                     wbLogger.Debug("wb nr :" + WallDisplayID + ". User element ext: " + elUserRT.Extension + " abb rate: " + elUserRT.PresenceState);
-                    usersDict[elUserRT.UserKey].State = agentStatusDict[elUserRT.RoutingState.ToString()];
-                    usersDict[elUserRT.UserKey].DurationSec = elUserRT.TimeInRoutingState;
+                    // we combine handling and routing state to 1 state on the walldisplay
+                    // if there is a handling state, the ahndling state is shown
+                    // if the handling state is none, the routing state is shown
+                    // note that after a direct call the time of the routing state does not reset from the OSCC.
+                    if (elUserRT.HandlingStates.Count > 0)
+                    {
+                        foreach (HiPathProCenterLibrary.UserRTHandlingState userHS in elUserRT.HandlingStates)
+                        {
+                            usersDict[elUserRT.UserKey].State = agentStatusDict[userHS.HandlingState.ToString()];
+                            usersDict[elUserRT.UserKey].DurationSec = userHS.TimeInHandlingState;
+                            wbLogger.Info("Parsing RT User event of user key: " + elUserRT.UserKey + " with handlingstate : " + userHS.HandlingState.ToString());
+                        }
+                    }
+                    else {
+                        usersDict[elUserRT.UserKey].State = agentStatusDict[elUserRT.RoutingState.ToString()];
+                        usersDict[elUserRT.UserKey].DurationSec = elUserRT.TimeInRoutingState;
+                        wbLogger.Info("Parsing RT User event of user key: " + elUserRT.UserKey + " with routingstate : " + elUserRT.RoutingState.ToString());
+                    }
+
                     loggedOffList.Remove(elUserRT.UserKey);
                     wbLogger.Debug("Parsing RT User event of user key: " + elUserRT.UserKey+ " with userDict : "  + usersDict[elUserRT.UserKey].ToString() );
                 }

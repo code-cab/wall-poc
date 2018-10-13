@@ -226,9 +226,10 @@ namespace Walldisplay
                     wb.setQueuesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueRealtimeEvent, wb.getQueuesKeylist()));
                     wb.setUsersRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_UserRealtimeEvent, wb.getUsersKeylist()));
                     wb.setGroupsRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupRealtimeEvent, wb.getGroupsKeylist()));
-
-                    wb.setAggregatesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateCumulativeEvent, wb.getAggregatesKeylist()));
-                    wb.setQueuesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueCumulativeEvent, wb.getQueuesKeylist()));
+                    // midnight of the running current
+                    DateTime startTimeCumDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
+                    wb.setAggregatesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateCumulativeEvent, wb.getAggregatesKeylist(),startTimeCumDate));
+                    wb.setQueuesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueCumulativeEvent, wb.getQueuesKeylist(),startTimeCumDate));
                     //wb.setGroupsCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupCumulativeEvent, wb.getGroupsKeylist()));
                     //wb.setUsersCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_UserCumulativeEvent, wb.getUsersKeylist()));
 
