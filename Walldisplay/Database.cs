@@ -118,6 +118,22 @@ namespace Walldisplay
                             retVal = "QueueDoesNotExist";
                         }
                     }
+                    myCommand = new OdbcCommand(sqlCmduserLastNameAll, conn);
+                    myReader = myCommand.ExecuteReader();
+                    while (myReader.Read())
+                    {
+                        if (myReader.HasRows && !myReader.IsDBNull(1) && !myReader.IsDBNull(0))
+                        {
+                            dbLogger.Info("User key: " + Convert.ToString(myReader.GetInt32(1)) + " has User lastname: " + myReader.GetString(0));
+                            retVal = myReader.GetString(0);
+                        }
+                        else
+                        {
+                            dbLogger.Error("error. queue with key: " + Convert.ToString(myReader.GetInt32(1)) + " does not exist");
+                            retVal = "QueueDoesNotExist";
+                        }
+                    }
+
                     myCommand = new OdbcCommand(sqlCmdgroupNameAll, conn);
                     myReader = myCommand.ExecuteReader();
                     while (myReader.Read())
@@ -163,7 +179,7 @@ namespace Walldisplay
             String retVal = "Name";
             try {
                 if (conn.State == ConnectionState.Open)
-                { OdbcCommand myCommand = new OdbcCommand(sqlCmduserName + Key + ";", conn);
+                { OdbcCommand myCommand = new OdbcCommand(sqlCmduserLastName + Key + ";", conn);
                   OdbcDataReader myReader = myCommand.ExecuteReader();
                   myReader.Read();
                     if (myReader.HasRows)

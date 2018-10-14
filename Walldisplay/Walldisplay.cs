@@ -45,11 +45,11 @@ namespace Walldisplay
                                        {
                                         { "RoutingState_Available", "IDLE" },
                                         { "RoutingState_Unknown", "IDLE" },
-                                        { "RoutingState_Unavailable", "AWAY" },
-                                        { "RoutingState_Work", "ACTIVE" },
+                                        { "RoutingState_Unavailable", "Away" },
+                                        { "RoutingState_Work", "Active" },
                                         { "HandlingState_Ringing", "Ringing" },
                                         { "HandlingState_Holding", "Hold" },
-                                        { "HandlingState_Talking", "Talking" }
+                                        { "HandlingState_Talking", "Active" }
                                        };
 
 
