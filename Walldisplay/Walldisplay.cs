@@ -203,13 +203,13 @@ namespace Walldisplay
                         {
                             usersDict[elUserRT.UserKey].State = agentStatusDict[userHS.HandlingState.ToString()];
                             usersDict[elUserRT.UserKey].DurationSec = userHS.TimeInHandlingState;
-                            wbLogger.Info("Parsing RT User event of user key: " + elUserRT.UserKey + " with handlingstate : " + userHS.HandlingState.ToString());
+                            wbLogger.Debug("Parsing RT User event of user key: " + elUserRT.UserKey + " with handlingstate : " + userHS.HandlingState.ToString());
                         }
                     }
                     else {
                         usersDict[elUserRT.UserKey].State = agentStatusDict[elUserRT.RoutingState.ToString()];
                         usersDict[elUserRT.UserKey].DurationSec = elUserRT.TimeInRoutingState;
-                        wbLogger.Info("Parsing RT User event of user key: " + elUserRT.UserKey + " with routingstate : " + elUserRT.RoutingState.ToString());
+                        wbLogger.Debug("Parsing RT User event of user key: " + elUserRT.UserKey + " with routingstate : " + elUserRT.RoutingState.ToString());
                     }
 
                     loggedOffList.Remove(elUserRT.UserKey);
