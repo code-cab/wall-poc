@@ -139,6 +139,7 @@ namespace Walldisplay
                 wallDisplayList.ElementAt(j - 1).setQueuesKeylist(settingIniFile["WB" + j]["QueueKeys"]);
                 wallDisplayList.ElementAt(j - 1).setView(settingIniFile["WB" + j]["View"]);
                 wallDisplayList.ElementAt(j - 1).initializeWallBoard();
+                logger.Debug("WB initialized with nr: " + j);
             }
             /// initalize information on walldisplay
 
@@ -153,6 +154,7 @@ namespace Walldisplay
             /// set listen filters and store query id
             if (osccConnected)
             {
+                logger.Debug("Going to set Eventfiltes ");
                 setEventFilters();
             }
             else { logger.Info("No event filters set because OSCC is not connected"); }
@@ -223,14 +225,14 @@ namespace Walldisplay
 
                 foreach (Walldisplay wb in wallDisplayList)
                 {
-                    wb.setAggregatesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateRealtimeEvent, wb.getAggregatesKeylist()));
-                    wb.setQueuesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueRealtimeEvent, wb.getQueuesKeylist()));
+                    //wb.setAggregatesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateRealtimeEvent, wb.getAggregatesKeylist()));
+                    //wb.setQueuesRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueRealtimeEvent, wb.getQueuesKeylist()));
                     wb.setUsersRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_UserRealtimeEvent, wb.getUsersKeylist()));
-                    wb.setGroupsRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupRealtimeEvent, wb.getGroupsKeylist()));
+                    //wb.setGroupsRTQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupRealtimeEvent, wb.getGroupsKeylist()));
                     // midnight of the running current
                     DateTime startTimeCumDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, 0, 0, 0);
-                    wb.setAggregatesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateCumulativeEvent, wb.getAggregatesKeylist(),startTimeCumDate));
-                    wb.setQueuesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueCumulativeEvent, wb.getQueuesKeylist(),startTimeCumDate));
+                    //wb.setAggregatesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_AggregateCumulativeEvent, wb.getAggregatesKeylist(),startTimeCumDate));
+                    //wb.setQueuesCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_QueueCumulativeEvent, wb.getQueuesKeylist(),startTimeCumDate));
                     //wb.setGroupsCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_GroupCumulativeEvent, wb.getGroupsKeylist()));
                     //wb.setUsersCumQueryID(objStatMan.ListenForEvents(enStatisticsEventTypes.StatisticsEventType_UserCumulativeEvent, wb.getUsersKeylist()));
 
@@ -251,6 +253,7 @@ namespace Walldisplay
 
         private static void ObjStatMan_EventOccurred(StatisticsEvent StatisticsEvent)
         {
+            logger.Debug("procenter statistic event occured with type: " + StatisticsEvent.ObjectType.ToString());
             switch (StatisticsEvent.ObjectType)
             {
                 case enStatisticsEventObjectTypes.StatisticsEventObjectType_ManagerStateChanged:
@@ -260,11 +263,14 @@ namespace Walldisplay
                     break;
                 case enStatisticsEventObjectTypes.StatisticsEventObjectType_AggregateRealtime:
                     HiPathProCenterLibrary.AggregateRealtimeEvent oAggregateRealtimeEvent = (HiPathProCenterLibrary.AggregateRealtimeEvent)StatisticsEvent;
-                    logger.Debug("procenter statistic event Aggregate " + oAggregateRealtimeEvent.ToString());
+                    logger.Debug("procenter statistic event RT Aggregate " + oAggregateRealtimeEvent.ToString());
                     foreach (Walldisplay wb in wallDisplayList)
                     {
+                        logger.Debug("procenter statistic event RT Aggregate wb queryID " + wb.getAggregatesRTQueryID());
+                        logger.Debug("procenter statistic event RT Aggregate event query ID " + oAggregateRealtimeEvent.QueryID);
                         if (oAggregateRealtimeEvent.QueryID == wb.getAggregatesRTQueryID())
                         {
+                            logger.Debug("procenter statistic event RT Aggregate event set to WB with number: " + wb.getAggregatesRTQueryID());
                             wb.setAggregateRTevent(oAggregateRealtimeEvent);
                         }
                     }
@@ -273,10 +279,12 @@ namespace Walldisplay
                 case enStatisticsEventObjectTypes.StatisticsEventObjectType_UserRealtime:
                     HiPathProCenterLibrary.UserRealtimeEvent oUserRealtimeEvent = (HiPathProCenterLibrary.UserRealtimeEvent)StatisticsEvent;
                     logger.Debug("procenter statistic event user realtime :" + oUserRealtimeEvent.ToString());
+                    logger.Debug("procenter statistic event user realtime :" + oUserRealtimeEvent.Count);
                     foreach (Walldisplay wb in wallDisplayList)
                     {
                         if (oUserRealtimeEvent.QueryID == wb.getUsersRTQueryID())
                         {
+                            logger.Debug("procenter statistic event user realtime  :" + oUserRealtimeEvent.ToString());
                             wb.setUserRTevent(oUserRealtimeEvent);
                         }
                     }
@@ -384,6 +392,11 @@ namespace Walldisplay
                     objStatMan.StopListeningForEvents(wb.getQueuesRTQueryID());
                     objStatMan.StopListeningForEvents(wb.getUsersRTQueryID());
                     objStatMan.StopListeningForEvents(wb.getGroupsRTQueryID());
+                    objStatMan.StopListeningForEvents(wb.getAggregatesCumQueryID());
+                    objStatMan.StopListeningForEvents(wb.getGroupsCumQueryID());
+                    objStatMan.StopListeningForEvents(wb.getQueuesCumQueryID());
+                    objStatMan.StopListeningForEvents(wb.getUsersCumQueryID());
+
                 }
 
                 objOSCC.EventOccurred -= ObjOSCC_EventOccurred;
@@ -418,7 +431,7 @@ namespace Walldisplay
             logger.Debug("OSCC sitekey : " + osccDB.getSitekey());
             logger.Debug("OSCC cstaAdress: " + osccDB.getCstaAdres());
             logger.Debug("OSCC db servername: " + osccDB.getServerName());
-            logger.Info("logging all keys for convenience: " + osccDB.logAllKeys());
+            //logger.Info("logging all keys for convenience: " + osccDB.logAllKeys());
 
             string tempAppName = osccDB.getSitekey();
             tempAppName += osccDB.getServerName();

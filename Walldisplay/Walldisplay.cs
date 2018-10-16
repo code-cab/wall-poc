@@ -162,7 +162,7 @@ namespace Walldisplay
         public void setAggregateRTevent(HiPathProCenterLibrary.AggregateRealtimeEvent ev)
         {
             aggregateRTEv = ev;
-
+            wbLogger.Debug("entering setAggregateRTevent for wb nr :" + WallDisplayID );
             foreach (HiPathProCenterLibrary.AggregateRealtimeElement elAggrRT in aggregateRTEv)
             {
                 wbLogger.Debug("wb nr :" + WallDisplayID + ". Aggr element Key: " + elAggrRT.AggregateKey + " abb rate: " + elAggrRT.Contacts);
@@ -180,15 +180,17 @@ namespace Walldisplay
 
         public void setUserRTevent(HiPathProCenterLibrary.UserRealtimeEvent ev)
         {
-            userRTEv = ev;
+            HiPathProCenterLibrary.UserRealtimeEvent userRTEv = ev;
             keyList loggedOffList = new keyList();
 
+            wbLogger.Debug("entering setUser RT Event for wb nr :" + WallDisplayID );
             foreach (int i in usersList)
             {
                 loggedOffList.Add(i);
             }
             if (userRTEv.Count > 0)
             {
+                wbLogger.Debug("wb nr : " + WallDisplayID + ". User element in user ev : " + userRTEv.Count);
                 foreach (HiPathProCenterLibrary.UserRealtimeElement elUserRT in userRTEv)
 
                 {
@@ -201,7 +203,8 @@ namespace Walldisplay
                     {
                         foreach (HiPathProCenterLibrary.UserRTHandlingState userHS in elUserRT.HandlingStates)
                         {
-                            usersDict[elUserRT.UserKey].State = agentStatusDict[userHS.HandlingState.ToString()];
+                            //usersDict[elUserRT.UserKey].State = agentStatusDict[userHS.HandlingState.ToString()];
+                            usersDict[elUserRT.UserKey].State = userHS.HandlingState.ToString();
                             usersDict[elUserRT.UserKey].DurationSec = userHS.TimeInHandlingState;
                             wbLogger.Debug("Parsing RT User event of user key: " + elUserRT.UserKey + " with handlingstate : " + userHS.HandlingState.ToString());
                         }
