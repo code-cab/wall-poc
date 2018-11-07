@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace Walldisplay
     public class QueueKey
     {
         public string GroupName { get; set; }
+        /// public string QueueName { get; set; }
         public int Received { get; set; }
         public int Abandoned { get; set; }
         public int Answered { get; set; }
@@ -40,6 +42,7 @@ namespace Walldisplay
 
     public class AggregateKey : QueueKey
     {
+        ///public string AggregateName { get; set; }
     }
 
     public class HourlyQueueKey : QueueKey
@@ -49,21 +52,28 @@ namespace Walldisplay
 
     public class KeysData
     {
+        public string View { get; set; }
         public UserKey[] UserKeys { get; set; }
         public GroupKey[] GroupKeys { get; set; }
         public QueueKey[] QueueKeys { get; set; }
         public AggregateKey[] AggregateKeys { get; set; }
         public HourlyQueueKey[][] HourlyQueueKeys { get; set; }
+        public int WaitingWarnLimit { get; set; }
+        public int AvgWaitingTimeLimit { get; set; }
+        public int ServiceLevelWarnLimit { get; set; }
 
         public KeysData()
         {
+            View = "initview";
             UserKeys = new UserKey[0];
             GroupKeys = new GroupKey[0];
             QueueKeys = new QueueKey[0];
             AggregateKeys = new AggregateKey[0];
             HourlyQueueKeys = new HourlyQueueKey[0][];
+
         }
     }
+
 
 
     sealed class DataStore
@@ -101,7 +111,7 @@ namespace Walldisplay
          **/ 
         public KeysData Data { get; set; }
         // Create a list of datasets, one dataset for each wallboard
-        public List<KeysData> dataList = new List<KeysData>();
+        public ConcurrentDictionary<String, KeysData> dataDictionary = new ConcurrentDictionary<String, KeysData>();
 
         void setDemoData()
         {
@@ -299,8 +309,6 @@ namespace Walldisplay
                 }
             };
             // demo data add two dataset (aka wallboard data ) to list
-            dataList.Add(Data);
-            dataList.Add(Data);
             //
 
         }
