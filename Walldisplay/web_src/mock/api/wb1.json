@@ -1,1 +1,41 @@
-{"View":"GroupUserStatistics","WaitingWarnLimit":5,"UserKeys":[{"Name":"Paul","State":"ACTIVE","DurationSec":481},{"Name":"Matt","State":"AWAY","DurationSec":1482},{"Name":"Anna","State":"IDLE","DurationSec":5},{"Name":"Peter","State":"ACTIVE","DurationSec":83}],"GroupKeys":[{"GroupName":"Group A","LoggedOn":20,"OnRoutedCall":4,"OnDirectCall":1,"Idle":2,"Busy":1,"Away":2,"CallsWaiting":3}],"QueueKeys":[],"AggregateKeys":[],"HourlyQueueKeys":[]}
+{
+  "View": "GroupUserStatistics",
+  "WaitingWarnLimit": 5,
+  "UserKeys": [
+    {
+      "Name": "Paul",
+      "State": "AWAY",
+      "DurationSec": 480
+    },
+    {
+      "Name": "Matt",
+      "State": "AWAY",
+      "DurationSec": 1482
+    },
+    {
+      "Name": "Anna",
+      "State": "IDLE",
+      "DurationSec": 5
+    },
+    {
+      "Name": "Peter",
+      "State": "ACTIVE",
+      "DurationSec": 83
+    }
+  ],
+  "GroupKeys": [
+    {
+      "GroupName": "Group A",
+      "LoggedOn": 20,
+      "OnRoutedCall": 4,
+      "OnDirectCall": 1,
+      "Idle": 2,
+      "Busy": 1,
+      "Away": 2,
+      "CallsWaiting": 3
+    }
+  ],
+  "QueueKeys": [],
+  "AggregateKeys": [],
+  "HourlyQueueKeys": []
+}

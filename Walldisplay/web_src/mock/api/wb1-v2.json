@@ -1,0 +1,92 @@
+{
+  "View": "GroupUserStatistics",
+  "UserKeys": [
+    {
+      "Name": "groenewegen van der weyden         ",
+      "State": "Away",
+      "DurationSec": 1460228
+    },
+    {
+      "Name": "Verdegaal                          ",
+      "State": "Away",
+      "DurationSec": 0
+    },
+    {
+      "Name": "Reubsaet                           ",
+      "State": "Away",
+      "DurationSec": 0
+    },
+    {
+      "Name": "Tours                              ",
+      "State": "Away",
+      "DurationSec": 0
+    },
+    {
+      "Name": "Griethuijsen, van                  ",
+      "State": "Away",
+      "DurationSec": 0
+    },
+    {
+      "Name": "Nutt                               ",
+      "State": "Away",
+      "DurationSec": 0
+    }
+  ],
+  "GroupKeys": [
+    {
+      "GroupName": "G_ICT                           ",
+      "LoggedOn": 1,
+      "OnRoutedCall": 0,
+      "OnDirectCall": 0,
+      "Idle": 0,
+      "Busy": 0,
+      "Away": 1,
+      "CallsWaiting": 0
+    },
+    {
+      "GroupName": "G_Sales                         ",
+      "LoggedOn": 1,
+      "OnRoutedCall": 0,
+      "OnDirectCall": 0,
+      "Idle": 0,
+      "Busy": 0,
+      "Away": 1,
+      "CallsWaiting": 0
+    }
+  ],
+  "QueueKeys": [
+    {
+      "GroupName": "Q_ICT                           ",
+      "Received": 0,
+      "Abandoned": 0,
+      "Answered": 0,
+      "AvgWaitingTimeSec": 0,
+      "MaxWaitingTimeSec": 0,
+      "ServiceLevelPerc": 100
+    },
+    {
+      "GroupName": "Q_Sales                         ",
+      "Received": 0,
+      "Abandoned": 0,
+      "Answered": 0,
+      "AvgWaitingTimeSec": 0,
+      "MaxWaitingTimeSec": 0,
+      "ServiceLevelPerc": 100
+    }
+  ],
+  "AggregateKeys": [
+    {
+      "GroupName": "A_ICT_EN_Sales                  ",
+      "Received": 0,
+      "Abandoned": 0,
+      "Answered": 0,
+      "AvgWaitingTimeSec": 0,
+      "MaxWaitingTimeSec": 0,
+      "ServiceLevelPerc": 100
+    }
+  ],
+  "HourlyQueueKeys": [],
+  "WaitingWarnLimit": 0,
+  "AvgWaitingTimeLimit": 0,
+  "ServiceLevelWarnLimit": 0
+}

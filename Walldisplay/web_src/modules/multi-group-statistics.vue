@@ -37,10 +37,10 @@
     import formatDuration from 'format-duration';
 
     export default {
-        data() {
-            return {
-                data: this.$parent.data
-            };
+        computed: {
+            data: function() {
+                return this.$parent.data
+            }
         },
         methods: {
             fmt(duration) {
