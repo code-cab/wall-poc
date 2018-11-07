@@ -32,8 +32,8 @@ namespace Walldisplay
             String url = args.FirstOrDefault(a => a.StartsWith("http"));
             if (url == null)
             {
-                //url = "http://127.0.0.1:9000/";
-                url = "http://172.16.0.41:9000/";
+                url = "http://127.0.0.1:9000/";
+                //url = "http://172.16.0.41:9000/";
             }
 
             if (!Environment.UserInteractive) EventLog.WriteEntry("Walldisplay webinterface listening at: " + url, EventLogEntryType.Information);
